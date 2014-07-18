@@ -1,0 +1,7 @@
+.container{
+	margin-top: 60px;
+}
+
+.datepicker.dropdown-menu{
+	z-index: 1050;
+}

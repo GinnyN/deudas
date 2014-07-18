@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block body %}
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#agregarCliente">
+	Agregar nuevo Cliente
+</button>
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#agregarGlosa">
+	Agregar nueva Glosa
+</button>
+<table class="table">
+	<thead>
+		<tr>
+			<th>Nombre</th>
+			{% for glosa in listGlosa %}
+				<th>{{ glosa.nombre }}
+			{% endfor %}
+			<th>Total</th>
+			<th>Abono</th>
+			<th>Balance</th>
+			<th></th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for cliente in clienteGlosa %}
+		<tr>
+			<td>{{cliente.0}}</td>
+			{% for total in cliente.1 %}
+				<td>{{total}}</td>
+			{% endfor %}
+			<td>{{cliente.2}}</td>
+			<td>{{cliente.3}}</td>
+			<td>{{cliente.4}}</td>
+			<td>
+				<button class="btn btn-primary btn-sm modal-click" data-toggle="modal" data-target="#agregarAbono" data-id={{cliente.5}}>
+					<span class="glyphicon glyphicon-plus"></span>
+				</button>
+			</td>
+			<td>
+				<button class="btn btn-danger btn-sm modal-click" data-toggle="modal" data-target="#agregarCobro" data-id={{cliente.5}}>
+					<span class="glyphicon glyphicon-minus"></span>
+				</button>
+			</td>
+			<td>
+				<button class="btn btn-success btn-sm" data-id={{cliente.5}}>
+					<span class="glyphicon glyphicon-edit"></span>
+				</button>
+			</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{% endblock %}
+{% block modal %}
+<div class="modal fade" id="agregarCliente">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <h4 class="modal-title">Agregar Nuevo Cliente</h4>
+      </div>
+      <form action="{% url 'add-cliente'%}"  method="POST">
+      		{% csrf_token %}
+	      <div class="modal-body">
+	        {{formCliente.as_p}}
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+	        <button type="submit" class="btn btn-primary">Guardar</button>
+	      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="agregarGlosa">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <h4 class="modal-title">Agregar Nueva Glosa</h4>
+      </div>
+      <form action="{% url 'add-glosa'%}"  method="POST">
+      		{% csrf_token %}
+	      <div class="modal-body">
+	        {{formGlosa.as_p}}
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+	        <button type="submit" class="btn btn-primary">Guardar</button>
+	      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="agregarCobro">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <h4 class="modal-title">Cobro</h4>
+      </div>
+      <form action="{% url 'add-cobro'%}"  method="POST">
+      		{% csrf_token %}
+      		<input type="hidden" name="cliente_pk" class="cliente_pk" value=""/>
+	      <div class="modal-body">
+	      {{ form.errors }}
+			{{ form.non_field_errors }}
+	        {{formCobro.as_p}}
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+	        <button type="submit" class="btn btn-primary">Guardar</button>
+	      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="agregarAbono">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <h4 class="modal-title">Abono</h4>
+      </div>
+      <form action="{% url 'add-abono'%}"  method="POST">
+      		{% csrf_token %}
+      		<input type="hidden" name="cliente_pk" class="cliente_pk" value=""/>
+	      <div class="modal-body">
+	        {{formAbono.as_p}}
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+	        <button type="submit" class="btn btn-primary">Guardar</button>
+	      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endblock %}

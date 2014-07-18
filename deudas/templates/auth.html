@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+		<link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+		<!-- Javascript -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="well">
+				<form action="{% url "login" %}" method=POST>
+					{% csrf_token %}
+					{{form.as_p}}
+					<button class="btn btn-primary"> Entrar </button>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
