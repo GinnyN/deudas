@@ -12,5 +12,9 @@ urlpatterns = patterns('',
     url(r'^add/glosa$',views.addGlosa.as_view(), name="add-glosa"),
     url(r'^add/cobro$',views.addCobro.as_view(), name="add-cobro"),
     url(r'^add/abono$',views.addAbono.as_view(), name="add-abono"),
+    url(r'^edit/cliente/$',views.editCliente.as_view(), name="edit-cliente"),
+    url(r'^filter/$',views.filter.as_view(), name="filter"),
+
+    url(r'^cliente/(?P<id>\d+)$',views.cliente.as_view(), name="cliente"),
 )
 

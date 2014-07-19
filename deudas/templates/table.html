@@ -1,0 +1,50 @@
+<table class="table">
+	<thead>
+		<tr>
+			<th>Nombre</th>
+			{% for glosa in listGlosa %}
+				<th>{{ glosa.nombre }}</th>
+			{% endfor %}
+			<th>Total</th>
+			<th>Atrasado</th>
+			<th>Abono</th>
+			<th>Balance</th>
+			<th></th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for cliente in clienteGlosa %}
+		<tr>
+			<td>
+				<a href="{% url 'cliente' id=cliente.6%}">
+					{{cliente.0}}
+				</a>
+			</td>
+			{% for total in cliente.1 %}
+				<td>{{total}}</td>
+			{% endfor %}
+			<td>{{cliente.2}}</td>
+			<td>{{cliente.3}}</td>
+			<td>{{cliente.4}}</td>
+			<td>{{cliente.5}}</td>
+			<td>
+				<button class="btn btn-primary btn-sm modal-click" data-toggle="modal" data-target="#agregarAbono" data-id={{cliente.6}}>
+					<span class="glyphicon glyphicon-plus"></span>
+				</button>
+			</td>
+			<td>
+				<button class="btn btn-danger btn-sm modal-click" data-toggle="modal" data-target="#agregarCobro" data-id={{cliente.6}}>
+					<span class="glyphicon glyphicon-minus"></span>
+				</button>
+			</td>
+			<td>
+				<button class="btn btn-success btn-sm edit-click modal-click" data-toggle="modal" data-target="#editCliente" data-id={{cliente.6}}>
+					<span class="glyphicon glyphicon-edit"></span>
+				</button>
+			</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>

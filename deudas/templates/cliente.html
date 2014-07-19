@@ -1,28 +1,94 @@
 {% extends "base.html" %}
 {% block body %}
-<p>
-	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#agregarCliente">
-		Agregar nuevo Cliente
-	</button>
-	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#agregarGlosa">
-		Agregar nueva Glosa
-	</button>
+<h1>
+	{% if prev %}
+	<a class="btn btn-default" href='{% url "cliente" id=prev %}'>
+		<span class="glyphicon glyphicon-arrow-left"> </span>
+	</a> 
+	{% endif %}
+	{{cliente.nombre}}
+	{% if next %}
+		<a class="btn btn-default" href='{% url "cliente" id=next %}'>
+			<span class="glyphicon glyphicon-arrow-right"> </span>
+		</a> 
+	{% endif %}
+</h1>
+<div class="row">
+	<div class="col-md-3">
+		<strong>RUT:</strong> {{cliente.rut}}
+	</div>
+	<div class="col-md-3">
+		<strong>Tipo:</strong> {{cliente.get_tipo_display}}
+	</div>
+	<div class="col-md-3">
+		<strong>Dueño:</strong> {{cliente.duenio}}
+	</div>
+	<div class="col-md-3">
+		<strong>Activo:</strong> {{cliente.activo}}
+	</div>
+</div>
+<p class="lead col-md-6">
+	<strong>Mensualidad:</strong> <span class="label label-primary">$M{{cliente.mensualidad}}</span>
 </p>
-<p>
-	<select class="form-control" id="filter">
-		<option value="all">--</option>
-		<option value="natural">Persona Natural</option>
-		{% for duenio in duenios %}
-			{% if forloop.first %}
-				<option value="no">Sociedades sin Dueño Seteado</option>
-			{% else %}
-				<option value="{{duenio.0}}">{{duenio.0|safe}}</option>
-			{% endif %}
-		{% endfor %}
-	</select>
+<p class="lead col-md-6">
+	<strong>Balance:</strong> <span class="label {% if balance > 0 %}label-danger{%else%}label-primary{%endif%}">$M{{balance}}</span>
 </p>
-<div class="data-table">
-{% include 'table.html' %}
+<button class="btn btn-primary" data-toggle="modal" data-target="#agregarAbono" >
+	Agregar Abono
+	<span class="glyphicon glyphicon-plus"></span>
+</button>
+<button class="btn btn-danger" data-toggle="modal" data-target="#agregarCobro" >
+	Agregar Cobro
+	<span class="glyphicon glyphicon-minus"></span>
+</button>
+<button class="btn btn-success" data-toggle="modal" data-target="#editCliente">
+	Editar Cliente
+	<span class="glyphicon glyphicon-edit"></span>
+</button>
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" role="tablist">
+  <li class="active"><a href="#completo" role="tab" data-toggle="tab">Log Completo</a></li>
+  <li><a href="#abono" role="tab" data-toggle="tab">Log Abono</a></li>
+  <li><a href="#cobro" role="tab" data-toggle="tab">Log Cobro</a></li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+  <div class="tab-pane active well" id="completo">
+  	{% for i in ingreso %}
+  		{% if i.tipo == "deuda" %}
+  			<p>
+  				<strong>
+  					<em>{{i.fecha|date:"j/m/Y"}}</em>: Se cobró $M<span class="text-danger">{{i.valor}}</span> por <span class="text-danger">{{i.glosa}}</span>
+  				</strong>
+  			</p>
+  		{% else %}
+  			<p>
+  				<strong>
+  					<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span>
+  				</strong>
+  			</p>
+  		{% endif %}
+  	{% endfor %}
+  </div>
+  <div class="tab-pane well" id="abono">
+  	{% for i in boleta %}
+  		<p>
+  			<strong>
+  				<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span>
+  			</strong>
+  		</p>
+  	{% endfor %}
+  </div>
+  <div class="tab-pane well" id="cobro">
+  	{% for i in deuda %}
+  		<p>
+  			<strong>
+  				<em>{{i.fecha|date:"j/m/Y"}}</em>: Se cobró $M<span class="text-danger">{{i.valor}}</span> por <span class="text-danger">{{i.glosa}}</span>
+  			</strong>
+  		</p>
+  	{% endfor %} 	
+  </div>
 </div>
 {% endblock %}
 {% block modal %}
@@ -77,7 +143,8 @@
       </div>
       <form action="{% url 'add-cobro'%}"  method="POST">
       		{% csrf_token %}
-      		<input type="hidden" name="cliente_pk" class="cliente_pk" value=""/>
+      		<input type="hidden" name="cliente_pk" class="cliente_pk" value="{{cliente.pk}}"/>
+      		<input type="hidden" name="where" value="cliente"/>
 	      <div class="modal-body">
 	      {{ form.errors }}
 			{{ form.non_field_errors }}
@@ -100,7 +167,8 @@
       </div>
       <form action="{% url 'add-abono'%}"  method="POST">
       		{% csrf_token %}
-      		<input type="hidden" name="cliente_pk" class="cliente_pk" value=""/>
+      		<input type="hidden" name="cliente_pk" class="cliente_pk" value="{{cliente.pk}}"/>
+      		<input type="hidden" name="where" value="cliente"/>
 	      <div class="modal-body">
 	        {{formAbono.as_p}}
 	      </div>
@@ -117,12 +185,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
-        <h4 class="modal-title">Editar Cliente</h4>
+        <h4 class="modal-title">Abono</h4>
       </div>
       <form action="{% url 'edit-cliente'%}"  method="POST">
       		{% csrf_token %}
-      		<input type="hidden" name="cliente_pk" class="cliente_pk" value=""/>
+      		<input type="hidden" name="cliente_pk" class="cliente_pk" value="{{cliente.pk}}"/>
+      		<input type="hidden" name="where" value="cliente"/>
 	      <div class="modal-body">
+	      	{{formCliente.as_p}}
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
