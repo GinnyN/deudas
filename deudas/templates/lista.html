@@ -8,7 +8,7 @@
 		Agregar nueva Glosa
 	</button>
 </p>
-<p>
+<div class="col-md-6">
 	<select class="form-control" id="filter">
 		<option value="all">--</option>
 		<option value="natural">Persona Natural</option>
@@ -20,7 +20,14 @@
 			{% endif %}
 		{% endfor %}
 	</select>
-</p>
+</div>
+<div class="col-md-6">
+  <select class="form-control" id="date">
+    {% for date in dates %}
+      <option value="{{date}}">{{date}}</option>
+    {% endfor %}
+  </select>
+</div>
 <div class="data-table">
 {% include 'table.html' %}
 </div>
