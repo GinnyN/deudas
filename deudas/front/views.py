@@ -91,8 +91,10 @@ class List(TemplateView):
 		context["formAbono"] = forms.AbonoForm(prefix="id")	
 		context["duenios"] = models.Cliente.objects.values_list("duenio").distinct()
 		context["listCliente"] = models.Cliente.objects.all().order_by("pk")
-		context["listGlosa"] = models.Glosa.objects.all().order_by("pk").exclude(nombre="Mensualidad").exclude(nombre="Atrasado")
-		context["clienteGlosa"] = tabla(context["listCliente"],context["listGlosa"],datetime.date.today(),"m")
+		context["listGlosa"] = models.Glosa.objects.all().order_by("pk").exclude(nombre__in=["Mensualidad","Atrasado"])
+		table = tabla(context["listCliente"],context["listGlosa"],datetime.date.today(),"m")
+		context["clienteGlosa"] = table[1]
+		context["listGlosa"] = table[0]
 		context["ahora"] = datetime.date.today().strftime("%B - %Y")
 		dates = models.Ingreso.objects.all().order_by("-fecha").values_list("fecha").distinct()
 		locale.setlocale(locale.LC_TIME, 'es_ES')
@@ -130,7 +132,15 @@ def tabla(listCliente,listGlosa, date,interval):
 	else:
 		datet = datetime.date(date.year,12,31)
 		datel = datetime.date(date.year,1,1)
-	return [tablaCliente(listCliente,listGlosa,datel,datet),tablaTotal(listCliente,listGlosa,datel,datet)]
+
+	listGlosa2 = listGlosa
+	listGlosa = []
+
+	for glosa in listGlosa2:
+		if not glosaCalc(listCliente, glosa,datet) == 0:
+			listGlosa.append(glosa)
+
+	return [listGlosa, [tablaCliente(listCliente,listGlosa,datel,datet),tablaTotal(listCliente,listGlosa,datel,datet)]]
 
 def tablaTotal(listCliente,listGlosa,datel,datet):
 	return [["Mensualidad", glosaCalc(listCliente, models.Glosa.objects.get(nombre="Mensualidad"),datet)],
