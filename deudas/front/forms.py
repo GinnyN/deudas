@@ -21,6 +21,7 @@ class GlosaForm(forms.ModelForm):
 		self.request = kwargs.pop('request', None)
 		super (GlosaForm,self ).__init__(*args,**kwargs)
 		self.fields['nombre'].widget = forms.TextInput(attrs={'class': 'form-control', 'required':"required"})
+		self.fields["detalle"].widget = forms.Textarea(attrs={'class': 'form-control', 'required':"required"})
 
 	class Meta:
 		model = models.Glosa
@@ -52,6 +53,6 @@ class AbonoForm(forms.ModelForm):
 
 	class Meta:
 		model = models.Ingreso
-		exclude = ["tipo","cliente","glosa"]
+		exclude = ["tipo","cliente"]
 
 

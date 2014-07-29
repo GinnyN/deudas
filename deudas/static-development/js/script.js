@@ -9,11 +9,42 @@ $(document).on("ready", function(){
         }
 	});
 	$(".edit-click").on("click", editClick);
-	$("#filter, #date").on("change",function(){
+	$("#selectGlosa").on("change",function(){
+		$.ajax({
+			type: "GET",
+			url: "/add/glosa/",
+			data: {selectGlosa: $("#selectGlosa").val()},
+			success: function(form){
+				$(".whereFormGoesGlosa").html(form);
+			}
+		})
+	})
+	$("#interval").on("change",function(){
+		if($(this).val()=="anual"){
+			date = $("#yearContainer").show();
+			date = $("#dateContainer").hide();
+		}else{
+			date = $("#dateContainer").show();
+			date = $("#yearContainer").hide();
+		}
+	})
+	$("#filter, #date, #year, #interval, #activo").on("change",function(){
+		if($("#interval").val()=="anual"){
+			date = $("#year").val();
+			$("#exportExcel").attr("href","/excel/y/"+date+"/");
+		}else{
+			date = $("#date").val();
+			$("#exportExcel").attr("href","/excel/m/"+date+"/")
+		}
+		if($("#activo").is(":checked")){
+			activo = "no-activo"
+		}else{
+			activo = "activo"
+		}
 		$.ajax({
 			type: "GET",
 			url: "/filter/",
-			data: {filter: $("#filter").val(), date: $("#date").val()},
+			data: {filter: $("#filter").val(), date: date, activo: activo},
 			success: function(table){
 				$(".data-table").html(table).find(".table").dataTable({
 					"language": {
@@ -22,6 +53,20 @@ $(document).on("ready", function(){
 				});
 				$(".modal-click").on("click", clienteClick);
 				$(".edit-click").on("click", editClick);
+			}
+		})
+	})
+	$(".delete").on("click",function(){
+		$(".pk").val($(this).data("pk"));
+	})
+	$(".filter-date").on("click",function(){
+		$.ajax({
+			type: "GET",
+			url: "/load/log/",
+			data: {end: $("#a").val(), begin: $("#desde").val(), cliente_pk:$(".cliente_pk").val()},
+			success: function(data){
+				console.log("Hola!");
+				$("#tab-container").html(data)
 			}
 		})
 	})

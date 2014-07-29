@@ -4,10 +4,27 @@
 	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#agregarCliente">
 		Agregar nuevo Cliente
 	</button>
-	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#agregarGlosa">
+	<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#agregarGlosa">
 		Agregar nueva Glosa
 	</button>
+  <a href={%url "excel" "m" ahora %} class="btn btn-success" id="exportExcel">
+    Exportar a Excel
+    <span class="glyphicon glyphicon-share"></span>
+  </a>
+  <a href={%url "cartas" "all" %} target="_blank" class="btn btn-danger" id="exportPDF">
+    Imprimir Cartas
+    <span class="glyphicon glyphicon-share"></span>
+  </a>
+  <a {% if mensualidad %} href={% url "mensualidad" %} class="btn btn-info" {% else %} href={% url "mensualidad" %} class="btn btn-info" {% endif %}>
+    Aplicar Mensualidad
+  </a>
 </p>
+
+   <div class="checkbox col-md-12">
+    <label>
+      <input type="checkbox" id="activo"  checked="checked"> Incluir no Activos
+    </label>
+  </div>
 <div class="col-md-6">
 	<select class="form-control" id="filter">
 		<option value="all">--</option>
@@ -21,13 +38,27 @@
 		{% endfor %}
 	</select>
 </div>
-<div class="col-md-6">
-  <select class="form-control" id="date">
+<div class="col-md-3">
+  <select class="form-control col-md-6" id="interval">
+    <option value="mensual">Mensual:</option>
+    <option value="anual">Anual:</option>
+  </select>
+</div>
+<div class="col-md-3" id="dateContainer">
+  <select class="form-control col-md-6" id="date">
     {% for date in dates %}
       <option value="{{date}}">{{date}}</option>
     {% endfor %}
   </select>
 </div>
+<div class="col-md-3" id="yearContainer">
+  <select class="form-control col-md-6" id="year">
+    {% for year in years %}
+      <option value="{{year}}">{{year}}</option>
+    {% endfor %}
+  </select>
+</div>
+
 <div class="data-table">
 {% include 'table.html' %}
 </div>
@@ -59,12 +90,20 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
-        <h4 class="modal-title">Agregar Nueva Glosa</h4>
+        <h4 class="modal-title">Editar Glosa</h4>
       </div>
       <form action="{% url 'add-glosa'%}"  method="POST">
       		{% csrf_token %}
 	      <div class="modal-body">
-	        {{formGlosa.as_p}}
+          <select id="selectGlosa" name="selectGlosa" class="form-control">
+           <option value="new">Agregar Nueva Glosa </option>
+           {% for glosa in listGlosa %}
+            <option value="{{glosa.pk}}">{{glosa.nombre}}</option>
+           {% endfor %}
+          </select>
+          <div class="whereFormGoesGlosa">
+	         {{formGlosa.as_p}}
+          </div>
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>

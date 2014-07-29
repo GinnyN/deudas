@@ -2,49 +2,62 @@
 	<thead>
 		<tr>
 			<th>Nombre</th>
+			<th>Mensualidad</th>
+			<th>Atrasado</th>
 			{% for glosa in listGlosa %}
 				<th>{{ glosa.nombre }}</th>
 			{% endfor %}
 			<th>Total</th>
-			<th>Atrasado</th>
-			<th>Abono</th>
-			<th>Balance</th>
 			<th></th>
 			<th></th>
 			<th></th>
 		</tr>
 	</thead>
 	<tbody>
-	{% for cliente in clienteGlosa %}
+	{% for cliente in clienteGlosa.0 %}
 		<tr>
 			<td>
-				<a href="{% url 'cliente' id=cliente.6%}">
+				<a href="{% url 'cliente' id=cliente.5%}">
 					{{cliente.0}}
 				</a>
 			</td>
-			{% for total in cliente.1 %}
-				<td>{{total}}</td>
+			<td>{{cliente.1.1}}</td>
+			<td>{{cliente.2.1}}</td>
+			{% for total in cliente.3 %}
+				<td>{{total.1}}</td>
 			{% endfor %}
-			<td>{{cliente.2}}</td>
-			<td>{{cliente.3}}</td>
 			<td>{{cliente.4}}</td>
-			<td>{{cliente.5}}</td>
 			<td>
-				<button class="btn btn-primary btn-sm modal-click" data-toggle="modal" data-target="#agregarAbono" data-id={{cliente.6}}>
-					<span class="glyphicon glyphicon-plus"></span>
-				</button>
-			</td>
-			<td>
-				<button class="btn btn-danger btn-sm modal-click" data-toggle="modal" data-target="#agregarCobro" data-id={{cliente.6}}>
+				<button class="btn btn-primary btn-sm modal-click" data-toggle="modal" data-target="#agregarAbono" data-id={{cliente.5}}>
 					<span class="glyphicon glyphicon-minus"></span>
 				</button>
 			</td>
 			<td>
-				<button class="btn btn-success btn-sm edit-click modal-click" data-toggle="modal" data-target="#editCliente" data-id={{cliente.6}}>
+				<button class="btn btn-danger btn-sm modal-click" data-toggle="modal" data-target="#agregarCobro" data-id={{cliente.5}}>
+					<span class="glyphicon glyphicon-plus"></span>
+				</button>
+			</td>
+			<td>
+				<button class="btn btn-success btn-sm edit-click modal-click" data-toggle="modal" data-target="#editCliente" data-id={{cliente.5}}>
 					<span class="glyphicon glyphicon-edit"></span>
 				</button>
 			</td>
 		</tr>
 	{% endfor %}
 	</tbody>
+	<tfoot>
+		<tr>
+			<td></td>
+			<td> {{ clienteGlosa.1.0.1}}</td>
+			<td> {{ clienteGlosa.1.1.1}}</td>
+			{% for total in clienteGlosa.1.2 %}
+				<td>{{total.1}}</td>
+			{% endfor %}
+			<td>{{clienteGlosa.1.3}}</td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tfoot>
 </table>
+{{ clienteGlosa }}

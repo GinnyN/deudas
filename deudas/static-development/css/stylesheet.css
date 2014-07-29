@@ -5,3 +5,7 @@
 .datepicker.dropdown-menu{
 	z-index: 1050;
 }
+
+#yearContainer{
+	display: none;
+}

@@ -1,0 +1,58 @@
+.carta{
+	page-break-after: always;
+}
+
+.carta .center{
+	text-align: center;
+}
+
+.carta .uppercase{
+	text-transform: uppercase;
+}
+.indent{
+	text-indent: 2.0em;
+}
+
+.carta{
+	margin: 0 5em;
+	font-family: 'Lato', sans-serif;
+}
+.carta table{
+	margin: 1em 5em;
+}
+.carta table td{
+	padding: 0.1em 1em;
+}
+.carta table tr{
+	margin:0;
+	padding:0;
+	border:0;
+}
+.carta table tr:last-child td{
+	border-top: 1px solid black;
+}
+.row{
+	margin:0;
+	padding:0;
+	border:0;
+	clear: both;
+}
+.row div{
+	float:left;
+}
+
+.col-md-3{
+	width: 25%;
+}
+.col-md-6{
+	width: 50%;
+}
+.col-md-7{
+	width: 58.33%;
+}
+.col-md-offset-3{
+	margin-left: 25%;
+}
+.little{
+	font-size: 0.25em;
+}

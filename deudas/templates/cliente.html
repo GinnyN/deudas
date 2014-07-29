@@ -28,67 +28,50 @@
 	</div>
 </div>
 <p class="lead col-md-6">
-	<strong>Mensualidad:</strong> <span class="label label-primary">$M{{cliente.mensualidad}}</span>
+	<strong>Mensualidad:</strong> <span class="label label-primary">$M{% if cliente.mensualidad == None %} 0 {% else %} {{cliente.mensualidad}}{% endif %}</span>
 </p>
 <p class="lead col-md-6">
 	<strong>Balance:</strong> <span class="label {% if balance > 0 %}label-danger{%else%}label-primary{%endif%}">$M{{balance}}</span>
 </p>
 <button class="btn btn-primary" data-toggle="modal" data-target="#agregarAbono" >
 	Agregar Abono
-	<span class="glyphicon glyphicon-plus"></span>
+	<span class="glyphicon glyphicon-minus"></span>
 </button>
 <button class="btn btn-danger" data-toggle="modal" data-target="#agregarCobro" >
 	Agregar Cobro
-	<span class="glyphicon glyphicon-minus"></span>
+	<span class="glyphicon glyphicon-plus"></span>
 </button>
 <button class="btn btn-success" data-toggle="modal" data-target="#editCliente">
 	Editar Cliente
 	<span class="glyphicon glyphicon-edit"></span>
 </button>
+<a href={%url "cartas" cliente.pk %} target="_blank" class="btn btn-danger" id="exportPDF">
+    Imprimir Carta
+    <span class="glyphicon glyphicon-share"></span>
+  </a>
 <!-- Nav tabs -->
-<ul class="nav nav-tabs" role="tablist">
-  <li class="active"><a href="#completo" role="tab" data-toggle="tab">Log Completo</a></li>
-  <li><a href="#abono" role="tab" data-toggle="tab">Log Abono</a></li>
-  <li><a href="#cobro" role="tab" data-toggle="tab">Log Cobro</a></li>
-</ul>
+<div class="row">
+<div class="col-md-5">
+  <div class="col-md-4">
+    <input type="text" class="form-control datepicker interval-log" id="desde" value="{{dateBegining}}"/>
+  </div>
+  <div class="col-md-4">
+    <input type="text" class="form-control datepicker interval-log" id="a" value="{{dateEnd}}"/>
+  </div>
+  <button class="filter-date btn btn-warning"> Aplicar Fechas </button>
+</div>
+<div class="col-md-7">
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a href="#completo" role="tab" data-toggle="tab">Log Completo</a></li>
+    <li><a href="#abono" role="tab" data-toggle="tab">Log Abono</a></li>
+    <li><a href="#cobro" role="tab" data-toggle="tab">Log Cobro</a></li>
+  </ul>
+</div>
+</div>
 
 <!-- Tab panes -->
-<div class="tab-content">
-  <div class="tab-pane active well" id="completo">
-  	{% for i in ingreso %}
-  		{% if i.tipo == "deuda" %}
-  			<p>
-  				<strong>
-  					<em>{{i.fecha|date:"j/m/Y"}}</em>: Se cobró $M<span class="text-danger">{{i.valor}}</span> por <span class="text-danger">{{i.glosa}}</span>
-  				</strong>
-  			</p>
-  		{% else %}
-  			<p>
-  				<strong>
-  					<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span>
-  				</strong>
-  			</p>
-  		{% endif %}
-  	{% endfor %}
-  </div>
-  <div class="tab-pane well" id="abono">
-  	{% for i in boleta %}
-  		<p>
-  			<strong>
-  				<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span>
-  			</strong>
-  		</p>
-  	{% endfor %}
-  </div>
-  <div class="tab-pane well" id="cobro">
-  	{% for i in deuda %}
-  		<p>
-  			<strong>
-  				<em>{{i.fecha|date:"j/m/Y"}}</em>: Se cobró $M<span class="text-danger">{{i.valor}}</span> por <span class="text-danger">{{i.glosa}}</span>
-  			</strong>
-  		</p>
-  	{% endfor %} 	
-  </div>
+<div id="tab-container">
+{% include 'tab.html' %}
 </div>
 {% endblock %}
 {% block modal %}
@@ -103,27 +86,6 @@
       		{% csrf_token %}
 	      <div class="modal-body">
 	        {{formCliente.as_p}}
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-	        <button type="submit" class="btn btn-primary">Guardar</button>
-	      </div>
-      </form>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div class="modal fade" id="agregarGlosa">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
-        <h4 class="modal-title">Agregar Nueva Glosa</h4>
-      </div>
-      <form action="{% url 'add-glosa'%}"  method="POST">
-      		{% csrf_token %}
-	      <div class="modal-body">
-	        {{formGlosa.as_p}}
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -180,24 +142,24 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<div class="modal fade" id="editCliente">
+<div class="modal fade" id="deleteIngreso">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
-        <h4 class="modal-title">Abono</h4>
+        <h4 class="modal-title">Borrar Ingreso</h4>
       </div>
-      <form action="{% url 'edit-cliente'%}"  method="POST">
-      		{% csrf_token %}
-      		<input type="hidden" name="cliente_pk" class="cliente_pk" value="{{cliente.pk}}"/>
-      		<input type="hidden" name="where" value="cliente"/>
-	      <div class="modal-body">
-	      	{{formCliente.as_p}}
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-	        <button type="submit" class="btn btn-primary">Guardar</button>
-	      </div>
+      <form action="{% url 'delete-ingreso'%}"  method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="cliente_pk" class="cliente_pk" value="{{cliente.pk}}"/>
+          <input type="hidden" name="pk" class="pk" value="{{cliente.pk}}"/>
+        <div class="modal-body">
+          Está seguro que quiere realizar ésta operación?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          <button type="submit" class="btn btn-primary">Sí</button>
+        </div>
       </form>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->

@@ -1,0 +1,69 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Sistema de Balance - Estudio Contable Allison & Ltda</title>
+
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href={% static "css/print.css" %}/>
+		<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+		<script>
+		window.print();
+		</script>
+	</head>
+	<body>
+		{% for client in clients %}
+		<div class="carta">
+			<div class="row">
+				<div class="col-md-7 center uppercase">
+					<p>John Allison Lopez<br/>
+					Colegio de Contadores Nº 12824-9<br/>
+					Fonos: 222151-227453</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-offset-3 col-md-6 center">
+					<p>La Calera</p>
+				</div>
+				<div class="col-md-3 center uppercase">
+					<p>{% now "F \d\e\l Y" %}</p>
+				</div>
+			</div>
+			<div class="row">
+				<p>Estimado Señor(a):</p>
+				<p class="indent">Le adjunto un detalle de mis Honorarios, que le agradecería cancelar a su más pronta conveniencia</p>
+			</div>
+			<div class="row">
+				<table class="no-border">
+					{% for glosa in client.1 %}
+						{% if glosa.1 > 0 %}
+							<tr>
+								<td>{{glosa.0}}</td>
+								<td>{{glosa.1}}</td>
+							</tr>
+						{% endif %}
+					{% endfor %}
+					{% if client.3 > 0 %}
+						<tr>
+							<td>Atrasado</td>
+							<td>{{client.3}}</td>
+						</tr>
+					{% endif %}
+					<tr>
+						<td>Total</td>
+						<td>{{client.5}}</td>
+					</tr>
+				</table>
+				<p class="indent">Les saluda atentamente:</p>
+			</div>
+			<div class="row">
+				<p class="little"> {{client.0}}</p>
+				<p> Presente. - </p>
+			</div>
+		</div>
+		{% endfor %}
+	</body>
+</html>

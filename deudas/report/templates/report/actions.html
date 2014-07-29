@@ -1,0 +1,30 @@
+{% extends "report/base.html" %}
+{% block report.title %}{{ year }} actions / {{ object_list.count }} entries {% endblock %}
+{% block report.content %}
+{% for period in date_list %}
+<h2>{{ period|date:"F" }}</h2>
+<table class="report-list" cellpadding="0" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Action</th>
+            <th>User</th>
+            <th>Object type</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for object in object_list %}
+        {% ifequal object.action_time.month period.month %}
+        <tr>
+            <td>{{ object.object_repr }}</td>
+            <td style="width:50px;">{{ object.user }}</td>
+            <td style="width:80px;">{{ object.content_type }}</td>
+            <td style="width:140px;">{{ object.action_time }}</td>
+        </tr>
+        {% endifequal %}
+        {% endfor %}
+    </tbody>
+</table>
+{% endfor %}
+{% endblock %}
+

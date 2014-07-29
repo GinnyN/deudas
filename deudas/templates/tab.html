@@ -1,0 +1,41 @@
+<div class="tab-content">
+  <div class="tab-pane active well" id="completo">
+  	{% for i in ingreso %}
+  		{% if i.tipo == "deuda" %}
+  			<p>
+          <button data-pk={{i.pk}} data-toggle="modal" data-target="#deleteIngreso" class="btn btn-link btn-xs text-muted delete"><span class="glyphicon glyphicon-remove"></span></button>
+  				<strong>
+  					<em>{{i.fecha|date:"j/m/Y"}}</em>: Se cobró $M<span class="text-danger">{{i.valor}}</span> por <span class="text-danger">{{i.glosa.nombre}}</span> - {{i.glosa.detalle}}
+  				</strong>
+  			</p>
+  		{% else %}
+  			<p>
+          <button data-pk={{i.pk}} data-toggle="modal" data-target="#deleteIngreso" class="btn btn-link btn-xs text-muted delete"><span class="glyphicon glyphicon-remove"></span></button>
+  				<strong>
+  					<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span>
+  				</strong>
+  			</p>
+  		{% endif %}
+  	{% endfor %}
+  </div>
+  <div class="tab-pane well" id="abono">
+  	{% for i in boleta %}
+  		<p>
+        <button data-pk={{i.pk}} data-toggle="modal" data-target="#deleteIngreso" class="btn btn-link btn-xs text-muted delete"><span class="glyphicon glyphicon-remove"></span></button>
+  			<strong>
+  				<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span>
+  			</strong>
+  		</p>
+  	{% endfor %}
+  </div>
+  <div class="tab-pane well" id="cobro">
+  	{% for i in deuda %}
+  		<p>
+        <button data-pk={{i.pk}} data-toggle="modal" data-target="#deleteIngreso" class="btn btn-link btn-xs text-muted delete"><span class="glyphicon glyphicon-remove"></span></button>
+  			<strong>
+  				<em>{{i.fecha|date:"j/m/Y"}}</em>: Se cobró $M<span class="text-danger">{{i.valor}}</span> por <span class="text-danger">{{i.glosa}}</span>
+  			</strong>
+  		</p>
+  	{% endfor %} 	
+  </div>
+</div>

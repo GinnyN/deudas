@@ -1,0 +1,59 @@
+{% load report %}
+<?xml version="1.0" encoding="{{ encoding }}" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" >
+    <head>
+        <title>{{ base_title }} {{ title }}</title>
+        <meta name="robots" content="NONE,NOARCHIVE" />
+        <meta http-equiv="Content-Type" content="text/html; charset={{ encoding|default:"utf-8" }}" />
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}report/css/reports-base.css" />
+        {% block extra_css %}{% endblock %}
+        {% block extra_js %}{% endblock %}
+        <meta http-equiv="Content-Type" content="text/html; {{ encoding }}">
+    </head>
+    <body class="report">
+        <div id="report-toolbar" class="no-print">
+            {% block report.toolbar %}
+            {{ base_title }} {{ title }} 
+            {% if toolbar_download_txt %}<a href="?pdf=true">{{ toolbar_download_txt|safe }}</a>{% endif %}
+            {% if toolbar_download %}{{ toolbar_download|safe }}{% endif %}
+            <a href="/admin/">{{ toolbar_back_txt|safe }}</a>
+            {% endblock %}
+        </div>
+        <div id="page">
+            {% block report.page %}
+            <div id="{% block report.head.id %}head{% endblock %}">
+                {% block report.head %}
+                <img src="{{ STATIC_URL }}report/img/django-report-logo.png" alt="Django Report" border="0">
+                {% endblock %}
+            </div>
+            <div id="body">
+                {% block report.body %}
+                <h1 id="title">{{ title|safe }}</h1>
+                <div id="content">
+                    {% block report.content %}{% endblock %}
+                </div>
+                {% endblock %}
+            </div>
+            <div id="foot">
+            {% block report.foot %}
+                {{ base_title }} {{ title }} &ndash; Page: 
+            {% endblock %}
+            </div>
+            {% endblock %}
+        </div>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(function(){
+                $('<div class="page-break">Page break</div>').insertBefore('pdf\\:nextpage');
+                $('#head-static').clone().css('margin-left', 0).insertAfter('.page-break');
+                $('pdf\\:pagenumber').each(function(i, node){
+                    $(node).replaceWith('<span>'+ (i + 1) +'</span>');
+                });
+              
+              })
+        </script>
+        {% block footer_css %}{% endblock %}
+        {% block footer_js %}{% endblock %}
+    </body>
+</html>

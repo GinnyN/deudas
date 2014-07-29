@@ -15,10 +15,11 @@ class Cliente(models.Model):
         ('activo', u"Activo"), 
         ('no-activo', u"No Activo"))
 	activo = models.CharField(max_length=20, choices=activo_opciones, default=activo_opciones[0][0], verbose_name=u"Activo")
-	mensualidad = models.IntegerField(verbose_name=u"Mensualidad")
+	mensualidad = models.IntegerField(verbose_name=u"Mensualidad", blank=True, null=True)
 
 class Glosa(models.Model):
 	nombre = models.CharField(max_length=500, verbose_name=u"Nombre")
+	detalle = models.TextField(verbose_name=u"Detalle")
 
 	def __unicode__(self):
 		return '%s' % self.nombre
