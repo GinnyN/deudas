@@ -61,7 +61,7 @@ class List(TemplateView):
 		today = datetime.date.today()
 		thisMonth = datetime.date(day=1,month=today.month,year=today.year)
 		lastMonth = thisMonth - datetime.timedelta(days=1)
-		if models.Glosa.objects.filter(nombre="Atrasado").exists():
+		'''if models.Glosa.objects.filter(nombre="Atrasado").exists():
 			glosa = models.Glosa.objects.get(nombre="Atrasado")
 		else:
 			glosa = models.Glosa(nombre="Atrasado",detalle="Honorarios Mensuales Atrasados")
@@ -71,7 +71,7 @@ class List(TemplateView):
 		for mensualidad in mensualidades:
 			mensualidad.glosa = glosa
 			mensualidad.save()
-
+		'''
 		if models.Glosa.objects.filter(nombre="Mensualidad").exists():
 			mensualidad = models.Glosa.objects.get(nombre="Mensualidad")
 		else:
@@ -116,8 +116,6 @@ class List(TemplateView):
 		return super(self.__class__, self).dispatch(request, *args, **kwargs)
 
 def mensualidad(date):
-	print(models.Ingreso.objects.filter(fecha__month=date.month,glosa__nombre="Mensualidad").count())
-	print(models.Cliente.objects.all().count())
 	if models.Ingreso.objects.filter(fecha__month=date.month,glosa__nombre="Mensualidad").count() == models.Cliente.objects.filter(activo="activo").count():
 		return True
 	else:
@@ -143,8 +141,8 @@ def tabla(listCliente,listGlosa, date,interval):
 	return [listGlosa, [tablaCliente(listCliente,listGlosa,datel,datet),tablaTotal(listCliente,listGlosa,datel,datet)]]
 
 def tablaTotal(listCliente,listGlosa,datel,datet):
-	return [["Mensualidad", glosaCalc(listCliente, models.Glosa.objects.get(nombre="Mensualidad"),datet)],
-		["Atrasado", glosaCalc(listCliente, models.Glosa.objects.get(nombre="Atrasado"),datet)],
+	return [["Mensualidad", mensualidadCal(listCliente, False,datet,datel)],
+		["Atrasado", mensualidadCal(listCliente, True,datet,datel)],
 		map(lambda glosa:
 		[glosa, glosaCalc(listCliente,glosa,datet)],	
 		listGlosa),
@@ -154,14 +152,45 @@ def tablaCliente(listCliente,listGlosa,datel,datet):
 	return map(
 		(lambda cliente:
 			[cliente.nombre,
-			["Mensualidad", glosaCalcCliente(cliente,models.Glosa.objects.get(nombre="Mensualidad"),datet)],
-			["Atrasado", glosaCalcCliente(cliente,models.Glosa.objects.get(nombre="Atrasado"),datet)],
+			["Mensualidad", mensualidadCal(cliente,False,datet,datel)],
+			["Atrasado", mensualidadCal(cliente,True,datet,datel)],
 			map(lambda glosa:
 				[glosa, glosaCalcCliente(cliente,glosa,datet)],
 			listGlosa),
 			deuda_totalCliente(cliente,"deuda",datet) - deuda_totalCliente(cliente,"boleta",datet),
 			cliente.pk]),
 		listCliente)
+
+def mensualidadCal(listCliente, atrasado, datet, datel):
+	glosa =  models.Glosa.objects.get(nombre="Mensualidad")
+
+	if isinstance(listCliente, list):
+		lista = models.Ingreso.objects.filter(cliente__in=listCliente)
+	else:
+		lista = models.Ingreso.objects.filter(cliente=listCliente)
+
+	if atrasado:
+		if lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
+			deuda = 0
+		else:
+			deuda = int(lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"])
+
+		if lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"] == None:
+			boleta = 0
+		else:
+			boleta = int(lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"])
+	else:
+		if lista.filter(glosa=glosa,fecha__lt=datet, fecha__gt=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
+			deuda = 0
+		else:
+			deuda = int(lista.filter(glosa=glosa,fecha__lt=datet, fecha__gt=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"])
+
+		if lista.filter(glosa=glosa,fecha__lt=datet, fecha__gt=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"] == None:
+			boleta = 0
+		else:
+			boleta = int(lista.filter(glosa=glosa,fecha__lt=datet, fecha__gt=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"])
+
+	return deuda - boleta
 
 def glosaCalc(listCliente, glosa,datet):
 	if models.Ingreso.objects.filter(glosa=glosa,fecha__lt=datet, cliente__in=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
@@ -211,19 +240,20 @@ def deuda__otherCliente(cliente, tipo, date):
 	if models.Ingreso.objects.filter(cliente=cliente,tipo=tipo, fecha__lt=date).aggregate(Sum('valor'))["valor__sum"] == None: 
 		return 0
 	else:
-		return models.Ingreso.objects.filter(cliente=cliente,tipo=tipo, fecha__lt=date).aggregate(Sum('valor'))["valor__sum"]
+		return int(models.Ingreso.objects.filter(cliente=cliente,tipo=tipo, fecha__lt=date).aggregate(Sum('valor'))["valor__sum"])
 
 def deuda_total(tipo,listCliente, datet): 
+	print(models.Ingreso.objects.filter(tipo=tipo, fecha__lt=datet,cliente__in=listCliente).aggregate(Sum('valor'))["valor__sum"])
 	if models.Ingreso.objects.filter(tipo=tipo, fecha__lt=datet,cliente__in=listCliente).aggregate(Sum('valor'))["valor__sum"] == None: 
 		return 0
 	else:
-		return models.Ingreso.objects.filter(tipo=tipo, fecha__lt=datet,cliente__in=listCliente).aggregate(Sum('valor'))["valor__sum"]
+		return int(models.Ingreso.objects.filter(tipo=tipo, fecha__lt=datet,cliente__in=listCliente).aggregate(Sum('valor'))["valor__sum"])
 
 def deuda_totalCliente(cliente, tipo, datet): 
 	if models.Ingreso.objects.filter(cliente=cliente,tipo=tipo, fecha__lt=datet).aggregate(Sum('valor'))["valor__sum"] == None: 
 		return 0
 	else:
-		return models.Ingreso.objects.filter(cliente=cliente,tipo=tipo, fecha__lt=datet).aggregate(Sum('valor'))["valor__sum"]
+		return int(models.Ingreso.objects.filter(cliente=cliente,tipo=tipo, fecha__lt=datet).aggregate(Sum('valor'))["valor__sum"])
 
 
 class addCliente(View):
@@ -357,7 +387,10 @@ class filter(TemplateView):
 			context["listCliente"] = models.Cliente.objects.filter(tipo="sociedad",duenio=self.request.GET["filter"]).order_by("pk")
 		if self.request.GET["activo"] == "activo":
 			context["listCliente"] = context["listCliente"].filter(activo=self.request.GET["activo"])
-		context["clienteGlosa"] = tabla(context["listCliente"],context["listGlosa"], datet, interval)
+		table = tabla(context["listCliente"],context["listGlosa"],datet,interval)
+		context["clienteGlosa"] = table[1]
+		context["listGlosa"] = table[0]
+
 		return context
 
 	@method_decorator(login_required)
@@ -377,7 +410,7 @@ class cliente(TemplateView):
 		context["ingreso"] = models.Ingreso.objects.filter(fecha__lt=dateEnd, fecha__gt=dateBegining, cliente=context["cliente"]).order_by("-fecha")
 		context["deuda"] = context["ingreso"].filter(tipo="deuda").order_by("-fecha")
 		context["boleta"] = context["ingreso"].filter(tipo="boleta").order_by("-fecha")
-		context["balance"] = deuda_totalCliente(context["cliente"],"deuda",datetime.date.today()) - deuda_totalCliente(context["cliente"],"boleta",datetime.date.today())
+		context["balance"] = deuda_totalCliente(context["cliente"],"deuda",dateEnd) - deuda_totalCliente(context["cliente"],"boleta",dateEnd)
 		context["formCliente"] = forms.ClienteForm(instance=context["cliente"],prefix="cliente")
 		context["formCobro"] = forms.CobroForm(prefix="id")
 		context["formAbono"] = forms.AbonoForm(prefix="id")	
@@ -450,6 +483,7 @@ class excel(View):
 	http_method_names = ['get']
 
 	def get(self, request, interval, fecha):
+		locale.setlocale(locale.LC_TIME, 'es_ES')
 		if interval == "m":
 			date = datetime.datetime.strptime(fecha, "%B - %Y")
 		else: 
@@ -464,21 +498,27 @@ class excel(View):
 			datet = datetime.date(date.year,12,31)
 			datel = datetime.date(date.year,1,1)
 
-		listGlosa= models.Glosa.objects.all().order_by("pk")
-		qs = tablaCliente(models.Cliente.objects.filter(tipo="natural"),listGlosa,datel,datet)
+		listGlosa= models.Glosa.objects.all().order_by("pk").exclude(nombre__in=["Mensualidad","Atrasado"])
+		listGlosa2 = listGlosa
+		listGlosa = []
+		listCliente = models.Cliente.objects.all()
+
+		for glosa in listGlosa2:
+			if not glosaCalc(listCliente, glosa,datet) == 0:
+				listGlosa.append(glosa)
+
+		qs = tablaCliente(listCliente.filter(tipo="natural"),listGlosa,datel,datet)
 		duenios = models.Cliente.objects.all().values_list("duenio").distinct()
 
 		for duenio in duenios:
 			qs.append([duenio[0]])
-			listaSociedad = tablaCliente(models.Cliente.objects.filter(tipo="sociedad", duenio=duenio[0]),listGlosa,datel,datet)
+			listaSociedad = tablaCliente(listCliente.filter(tipo="sociedad", duenio=duenio[0]),listGlosa,datel,datet)
 			qs = qs + listaSociedad
 
-		listGlosa= models.Glosa.objects.all().order_by("pk")
 		headers = map(lambda glosa: (glosa.nombre) ,listGlosa)
+		headers.insert(0,"Atrasado")
+		headers.insert(0,"Mensualidad")
 		headers.insert(0,"Nombre")
-		headers.append("Total")
-		headers.append("Atrasado")
-		headers.append("Abono")
 		headers.append("Total")
 
 		book = xlwt.Workbook()
@@ -500,8 +540,13 @@ class excel(View):
 				for cell in row:
 					if isinstance(cell, list):
 						for insideCell in cell:
-							sheet.write(y, i, str(insideCell[1]), DEFAULTSTYLE)
-							i+=1
+							if isinstance(insideCell, list):
+								sheet.write(y, i, str(insideCell[1]), DEFAULTSTYLE)
+								i+=1
+							else:
+								if isinstance(insideCell, int):
+									sheet.write(y, i, str(insideCell), DEFAULTSTYLE)
+									i+=1
 					else:
 						sheet.write(y, i, str(cell), DEFAULTSTYLE)
 						i+=1
@@ -513,11 +558,16 @@ class excel(View):
 
 		i = 1
 
-		for cell in tablaTotal(listGlosa,datel,datet):
+		for cell in tablaTotal(listCliente, listGlosa,datel,datet):
 			if isinstance(cell, list):
 				for insideCell in cell:
-					sheet.write(y, i, str(insideCell[1]), _HEADERSTYLE)
-					i+=1
+					if isinstance(insideCell, list):
+						sheet.write(y, i, str(insideCell[1]), _HEADERSTYLE)
+						i+=1
+					else:
+						if isinstance(insideCell, int):
+							sheet.write(y, i, str(insideCell), _HEADERSTYLE)
+							i+=1
 			else:
 				sheet.write(y, i, str(cell), _HEADERSTYLE)
 				i+=1
@@ -539,7 +589,7 @@ class cartas(TemplateView):
 
 	def get_context_data(self, cliente, **kwargs):
 		context = super(cartas, self).get_context_data(**kwargs)
-		glosas = models.Glosa.objects.all()
+		glosas = models.Glosa.objects.exclude(nombre="Mensualidad")
 		if cliente == "all":
 			listCliente = models.Cliente.objects.filter(activo="activo")
 		else:
@@ -548,7 +598,6 @@ class cartas(TemplateView):
 		datel = datetime.date.today().replace(day = 1)
 		context["clients"] = tablaCliente(listCliente,glosas,datel,datet)
 		print(context["clients"])
-
 		return context
 
 	@method_decorator(login_required)

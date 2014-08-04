@@ -12,7 +12,7 @@
   			<p>
           <button data-pk={{i.pk}} data-toggle="modal" data-target="#deleteIngreso" class="btn btn-link btn-xs text-muted delete"><span class="glyphicon glyphicon-remove"></span></button>
   				<strong>
-  					<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span>
+  					<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span> por <span class="text-primary">{{i.glosa.nombre}}</span> - {{i.glosa.detalle}}
   				</strong>
   			</p>
   		{% endif %}
@@ -23,7 +23,7 @@
   		<p>
         <button data-pk={{i.pk}} data-toggle="modal" data-target="#deleteIngreso" class="btn btn-link btn-xs text-muted delete"><span class="glyphicon glyphicon-remove"></span></button>
   			<strong>
-  				<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span>
+  				<em>{{i.fecha|date:"j/m/Y"}}</em>: Se abonó $M<span class="text-primary">{{i.valor}}</span> en la <span class="text-primary">boleta Nro{{i.numero}}</span> por <span class="text-primary">{{i.glosa.nombre}}</span> - {{i.glosa.detalle}}
   			</strong>
   		</p>
   	{% endfor %}

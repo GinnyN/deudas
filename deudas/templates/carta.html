@@ -38,7 +38,15 @@
 			</div>
 			<div class="row">
 				<table class="no-border">
-					{% for glosa in client.1 %}
+					<tr>
+						<td>{{client.1.0}}</td>
+						<td>{{client.1.1}}</td>
+					</tr>
+					<tr>
+						<td>{{client.2.0}}</td>
+						<td>{{client.2.1}}</td>
+					</tr>
+					{% for glosa in client.3 %}
 						{% if glosa.1 > 0 %}
 							<tr>
 								<td>{{glosa.0}}</td>
@@ -46,15 +54,9 @@
 							</tr>
 						{% endif %}
 					{% endfor %}
-					{% if client.3 > 0 %}
-						<tr>
-							<td>Atrasado</td>
-							<td>{{client.3}}</td>
-						</tr>
-					{% endif %}
 					<tr>
 						<td>Total</td>
-						<td>{{client.5}}</td>
+						<td>{{client.4}}</td>
 					</tr>
 				</table>
 				<p class="indent">Les saluda atentamente:</p>

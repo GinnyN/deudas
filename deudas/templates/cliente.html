@@ -75,12 +75,12 @@
 </div>
 {% endblock %}
 {% block modal %}
-<div class="modal fade" id="agregarCliente">
+<div class="modal fade" id="editCliente">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
-        <h4 class="modal-title">Agregar Nuevo Cliente</h4>
+        <h4 class="modal-title">Editar Cliente</h4>
       </div>
       <form action="{% url 'add-cliente'%}"  method="POST">
       		{% csrf_token %}
