@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.models import User
-from captcha.fields import CaptchaField
 from front import models
 from datetime import date
 
