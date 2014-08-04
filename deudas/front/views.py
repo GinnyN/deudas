@@ -13,7 +13,6 @@ import logging
 
 logging.basicConfig()
 
-from easy_pdf.views import PDFTemplateView
 from django.http import HttpResponse
 from utils.exporter import xls_response
 from django.shortcuts import render, redirect
