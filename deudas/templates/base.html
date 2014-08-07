@@ -34,6 +34,13 @@
 				  </button>
 				  <a class="navbar-brand" href="{% url 'list' %}">Sistema de Balance</a>
 				</div>
+				 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				  <ul class="nav navbar-nav navbar-right">
+				  	<li><a href="{% url 'create-user'%}">Crear Usuario</a></li>
+				  	<li><a href="{% url 'change-password'%}">Cambiar Contraseña</a></li>
+				  	<li><a href="{% url 'logout' %}">Log Out</a></li>
+				  </ul>
+				 </div>
 			</div><!-- /.container-fluid -->
 		</nav>
 		<div class="container">

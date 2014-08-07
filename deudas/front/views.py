@@ -24,6 +24,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.template.loader import render_to_string
 from django.db.models import Sum 
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.views.generic.edit import CreateView
+from django.contrib.auth import logout
 from front import forms, models
 
 # Style constants
@@ -50,6 +53,42 @@ class Login(FormView):
 	def form_valid(self, form):
 		login(self.request,form.get_user())
 		return super(Login, self).form_valid(form)
+
+class LogOut(View):
+
+	def get(self,request):
+		logout(request)
+		return redirect("login")
+
+	@method_decorator(login_required)
+	def dispatch(self, request, *args, **kwargs):
+		return super(self.__class__, self).dispatch(request, *args, **kwargs)
+
+
+class createUser(CreateView):
+	template_name = "creation.html"
+	form_class = UserCreationForm
+	success_url = "/list/"
+
+	@method_decorator(login_required)
+	def dispatch(self, request, *args, **kwargs):
+		return super(self.__class__, self).dispatch(request, *args, **kwargs)
+
+class changePassword(View):
+
+	def get(self, request):
+		form = PasswordChangeForm(user=request.user)
+		return render(request,"creation.html", {'form':form})
+
+	def post(self, request):
+		form = PasswordChangeForm(user=request.user, data=request.POST)
+		if form.is_valid():
+			form.save()
+		return redirect("list")
+
+	@method_decorator(login_required)
+	def dispatch(self, request, *args, **kwargs):
+		return super(self.__class__, self).dispatch(request, *args, **kwargs)
 
 class List(TemplateView):
 	template_name = "lista.html"
