@@ -560,7 +560,7 @@ class excel(View):
 		headers.insert(0,"Nombre")
 		headers.append("Total")
 
-		book = xlwt.Workbook()
+		book = xlwt.Workbook(encoding="UTF-8")
 		sheet = book.add_sheet(u"Clientes "+fecha)
 
 		for c, h in enumerate(headers):
