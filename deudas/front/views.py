@@ -580,19 +580,19 @@ class excel(View):
 					if isinstance(cell, list):
 						for insideCell in cell:
 							if isinstance(insideCell, list):
-								sheet.write(y, i, str(insideCell[1]).encode("UTF-8"), DEFAULTSTYLE)
+								sheet.write(y, i, unicode(insideCell[1]).encode("UTF-8"), DEFAULTSTYLE)
 								i+=1
 							else:
 								if isinstance(insideCell, int):
-									sheet.write(y, i, str(insideCell).encode("UTF-8"), DEFAULTSTYLE)
+									sheet.write(y, i, unicode(insideCell).encode("UTF-8"), DEFAULTSTYLE)
 									i+=1
 					else:
-						sheet.write(y, i, str(cell).encode("UTF-8"), DEFAULTSTYLE)
+						sheet.write(y, i, unicode(cell).encode("UTF-8"), DEFAULTSTYLE)
 						i+=1
 			else:
 				sheet.write(y, 0, "", _HEADERSTYLE)
 				y+=1
-				sheet.write(y, 0, str(row[0]).encode("UTF-8"), _HEADERSTYLE)
+				sheet.write(y, 0, unicode(row[0]).encode("UTF-8"), _HEADERSTYLE)
 			y+=1
 
 		i = 1
