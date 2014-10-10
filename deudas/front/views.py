@@ -568,7 +568,7 @@ class excel(View):
 			if isinstance(h, tuple):
 				h, w = h
 			w = w * _COLUMN_WIDTH
-			sheet.write(0, c, [s.encode('utf8') if type(s) is unicode else s for s in h], _HEADERSTYLE)
+			sheet.write(0, c, h.encode("UTF-8"), _HEADERSTYLE)
 			sheet.col(c).width = w
 
 		y = 1
@@ -580,19 +580,19 @@ class excel(View):
 					if isinstance(cell, list):
 						for insideCell in cell:
 							if isinstance(insideCell, list):
-								sheet.write(y, i, [s.encode('utf8') if type(s) is unicode else s for s in str(insideCell[1])], DEFAULTSTYLE)
+								sheet.write(y, i, str(insideCell[1]).encode("UTF-8"), DEFAULTSTYLE)
 								i+=1
 							else:
 								if isinstance(insideCell, int):
-									sheet.write(y, i, [s.encode('utf8') if type(s) is unicode else s for s in str(insideCell)], DEFAULTSTYLE)
+									sheet.write(y, i, str(insideCell).encode("UTF-8"), DEFAULTSTYLE)
 									i+=1
 					else:
-						sheet.write(y, i, [s.encode('utf8') if type(s) is unicode else s for s in str(cell)], DEFAULTSTYLE)
+						sheet.write(y, i, str(cell)], DEFAULTSTYLE)
 						i+=1
 			else:
 				sheet.write(y, 0, "", _HEADERSTYLE)
 				y+=1
-				sheet.write(y, 0, str(row[0]), _HEADERSTYLE)
+				sheet.write(y, 0, str(row[0]).encode("UTF-8"), _HEADERSTYLE)
 			y+=1
 
 		i = 1
