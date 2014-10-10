@@ -587,7 +587,7 @@ class excel(View):
 									sheet.write(y, i, str(insideCell).encode("UTF-8"), DEFAULTSTYLE)
 									i+=1
 					else:
-						sheet.write(y, i, str(cell)], DEFAULTSTYLE)
+						sheet.write(y, i, str(cell).encode("UTF-8"), DEFAULTSTYLE)
 						i+=1
 			else:
 				sheet.write(y, 0, "", _HEADERSTYLE)
