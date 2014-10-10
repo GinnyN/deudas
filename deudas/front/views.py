@@ -522,6 +522,7 @@ class excel(View):
 
 	def get(self, request, interval, fecha):
 		locale.setlocale(locale.LC_TIME, 'es_ES')
+		fecha.encode('utf8')
 		if interval == "m":
 			date = datetime.datetime.strptime(fecha, "%B - %Y")
 		else: 
