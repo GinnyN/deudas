@@ -196,7 +196,8 @@ def tablaCliente(listCliente,listGlosa,datel,datet):
 				[glosa, glosaCalcCliente(cliente,glosa,datet)],
 			listGlosa),
 			deuda_totalCliente(cliente,"deuda",datet) - deuda_totalCliente(cliente,"boleta",datet),
-			cliente.pk]),
+			cliente.pk,
+			cliente.tipo]),
 		listCliente)
 
 def mensualidadCal(listCliente, atrasado, datet, datel):

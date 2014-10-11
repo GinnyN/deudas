@@ -1,6 +1,7 @@
 <table class="table">
 	<thead>
 		<tr>
+			<th></th>
 			<th>Nombre</th>
 			<th>Mensualidad</th>
 			<th>Atrasado</th>
@@ -16,6 +17,13 @@
 	<tbody>
 	{% for cliente in clienteGlosa.0 %}
 		<tr>
+			<td>
+				{% if cliente.6 == "natural" %}
+					N
+				{% else %}
+					S
+				{% endif %}
+			</td>
 			<td>
 				<a href="{% url 'cliente' id=cliente.5%}">
 					{{cliente.0}}
@@ -47,6 +55,7 @@
 	</tbody>
 	<tfoot>
 		<tr>
+			<td></td>
 			<td></td>
 			<td> {{ clienteGlosa.1.0.1}}</td>
 			<td> {{ clienteGlosa.1.1.1}}</td>
