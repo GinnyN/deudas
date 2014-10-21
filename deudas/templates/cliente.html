@@ -31,7 +31,7 @@
 	<strong>Mensualidad:</strong> <span class="label label-primary">$M{% if cliente.mensualidad == None %} 0 {% else %} {{cliente.mensualidad}}{% endif %}</span>
 </p>
 <p class="lead col-md-6">
-	<strong>Balance:</strong> <span class="label {% if balance > 0 %}label-danger{%else%}label-primary{%endif%}">$M{{balance}}</span>
+	<strong>Total:</strong> <span class="label {% if balance > 0 %}label-danger{%else%}label-primary{%endif%}">$M{{balance}}</span>
 </p>
 <button class="btn btn-primary" data-toggle="modal" data-target="#agregarAbono" >
 	Agregar Abono

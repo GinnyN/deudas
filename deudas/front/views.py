@@ -116,6 +116,9 @@ class List(TemplateView):
 			glosa = models.Glosa(nombre="Mensualidad",detalle="Honorarios Mensuales")
 			glosa.save()
 
+		if models.Glosa.objects.filter(nombre="Atrasado").exists() != True:
+			models.Glosa(nombre="Atrasado", detalle="Honorarios Atrasados").save()
+
 		clientes = models.Cliente.objects.filter(activo="activo")
 		for cliente in clientes:
 			if not models.Ingreso.objects.filter(cliente=cliente,glosa=mensualidad,fecha__month=datetime.date.today().month):
@@ -202,6 +205,7 @@ def tablaCliente(listCliente,listGlosa,datel,datet):
 
 def mensualidadCal(listCliente, atrasado, datet, datel):
 	glosa =  models.Glosa.objects.get(nombre="Mensualidad")
+	atrasadoGlosa =  models.Glosa.objects.get(nombre="Atrasado")
 
 	if isinstance(listCliente, list):
 		lista = models.Ingreso.objects.filter(cliente__in=listCliente)
@@ -213,6 +217,17 @@ def mensualidadCal(listCliente, atrasado, datet, datel):
 			deuda = 0
 		else:
 			deuda = int(lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"])
+
+		if lista.filter(glosa=atrasadoGlosa, fecha__lt= datet, cliente=listCliente, tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
+			atrasado = 0
+		else:
+			atrasado = int(lista.filter(glosa=atrasadoGlosa, fecha__lt= datet, cliente=listCliente, tipo="deuda").aggregate(Sum('valor'))["valor__sum"])
+		
+		if lista.filter(glosa=atrasadoGlosa, fecha__lt= datet, cliente=listCliente, tipo="boleta").aggregate(Sum('valor'))["valor__sum"] == None:
+			atrasadoBoleta = 0
+		else:
+			atrasadoBoleta = int(lista.filter(glosa=atrasadoGlosa, fecha__lt= datet, cliente=listCliente, tipo="boleta").aggregate(Sum('valor'))["valor__sum"])
+		
 
 		if lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"] == None:
 			boleta = 0
@@ -229,7 +244,10 @@ def mensualidadCal(listCliente, atrasado, datet, datel):
 		else:
 			boleta = int(lista.filter(glosa=glosa,fecha__lt=datet, fecha__gt=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"])
 
-	return deuda - boleta
+		atrasado = 0
+		atrasadoBoleta = 0
+
+	return atrasado + deuda - boleta - atrasadoBoleta
 
 def glosaCalc(listCliente, glosa,datet):
 	if models.Ingreso.objects.filter(glosa=glosa,fecha__lt=datet, cliente__in=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
@@ -401,6 +419,17 @@ class editCliente(View):
 	@method_decorator(login_required)
 	def dispatch(self, request, *args, **kwargs):
 		return super(self.__class__, self).dispatch(request, *args, **kwargs)
+
+class deleteCliente(View):
+
+	def post(self, request):
+		models.Cliente.objects.get(pk=request.POST["cliente_pk"]).delete()
+		return HttpResponse()
+
+	@method_decorator(login_required)
+	def dispatch(self, request, *args, **kwargs):
+		return super(self.__class__, self).dispatch(request, *args, **kwargs)
+
 
 class filter(TemplateView):
 	template_name = "table.html"
@@ -637,7 +666,10 @@ class cartas(TemplateView):
 		datet = datetime.date.today().replace(day = calendar.monthrange(datetime.date.today().year, datetime.date.today().month)[1])
 		datel = datetime.date.today().replace(day = 1)
 		context["clients"] = tablaCliente(listCliente,glosas,datel,datet)
-		print(context["clients"])
+		today = datetime.date.today()
+ 		first = datetime.date(day=1, month=today.month, year=today.year)
+ 		context["lastMonth"] = first - datetime.timedelta(days=1)
+ 		print context["lastMonth"]
 		return context
 
 	@method_decorator(login_required)

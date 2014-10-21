@@ -70,10 +70,22 @@ $(document).on("ready", function(){
 			}
 		})
 	})
+	$("#deleteClient").on("click", function(){
+		var r = confirm("Ésta acción va a borrar todos los datos del cliente, está seguro/a que quiere hacerlo?");
+		if (r){
+			$.ajax({
+				type: "POST",
+				url: "/delete/cliente/",
+				data: {cliente_pk:$(".cliente_pk").val(), csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val()},
+				success: function(data){
+					location.reload();
+				}
+			})
+		}
+	})
 });
 
 function clienteClick(){
-	console.log("Hola!");
 	$(".cliente_pk").val($(this).data("id"));
 }
 
@@ -83,7 +95,6 @@ function editClick(){
 	  url: "/edit/cliente/",
 	  data: { pk: $(this).data("id")},
 	  success: function(form){
-	  	console.log("Hola!");
 	  	$("#editCliente .modal-body").html(form);
 	  }
 	})
