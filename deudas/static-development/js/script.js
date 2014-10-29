@@ -66,7 +66,10 @@ $(document).on("ready", function(){
 			data: {end: $("#a").val(), begin: $("#desde").val(), cliente_pk:$(".cliente_pk").val()},
 			success: function(data){
 				console.log("Hola!");
-				$("#tab-container").html(data)
+				$("#tab-container").html(data);
+				$(".delete").on("click",function(){
+					$(".pk").val($(this).data("pk"));
+				})
 			}
 		})
 	})
