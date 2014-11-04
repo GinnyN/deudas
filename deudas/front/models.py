@@ -18,7 +18,7 @@ class Cliente(models.Model):
 	mensualidad = models.IntegerField(verbose_name=u"Mensualidad", blank=True, null=True)
 
 	def __unicode__(self):
-        return self.nombre
+		return self.nombre
 
 class Glosa(models.Model):
 	nombre = models.CharField(max_length=500, verbose_name=u"Nombre")
@@ -39,5 +39,5 @@ class Ingreso(models.Model):
 	cliente = models.ForeignKey(Cliente)
 
 	def __unicode__(self):
-        return self.cliente.nombre + " - " + self.glosa.nombre
+		return self.cliente.nombre + " - " + self.glosa.nombre
 	
