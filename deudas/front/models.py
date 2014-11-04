@@ -39,5 +39,11 @@ class Ingreso(models.Model):
 	cliente = models.ForeignKey(Cliente)
 
 	def __unicode__(self):
-		return self.cliente.nombre + " - " + self.glosa.nombre
+		try:
+			return self.cliente.nombre + " - " + self.glosa.nombre
+		except:
+			try:
+				return self.glosa.nombre
+			except:
+				return self.cliente.nombre
 	
