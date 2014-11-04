@@ -17,6 +17,9 @@ class Cliente(models.Model):
 	activo = models.CharField(max_length=20, choices=activo_opciones, default=activo_opciones[0][0], verbose_name=u"Activo")
 	mensualidad = models.IntegerField(verbose_name=u"Mensualidad", blank=True, null=True)
 
+	def __unicode__(self):
+        return self.nombre
+
 class Glosa(models.Model):
 	nombre = models.CharField(max_length=500, verbose_name=u"Nombre")
 	detalle = models.TextField(verbose_name=u"Detalle")
@@ -34,4 +37,7 @@ class Ingreso(models.Model):
 	numero = models.IntegerField(verbose_name=u"Numero de Boleta", blank=True)
 	glosa = models.ForeignKey(Glosa, blank=True, null=True)
 	cliente = models.ForeignKey(Cliente)
+
+	def __unicode__(self):
+        return self.cliente.nombre + " - " + self.glosa.nombre
 	
