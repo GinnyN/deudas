@@ -44,6 +44,9 @@ _HEADERSTYLE = xlwt.easyxf("font: bold on; "
 #: Unit of with for columns.
 _COLUMN_WIDTH = 1344
 
+#Default Config
+CARTACONFIG = 2
+
 
 class Login(FormView):	
 	template_name = 'auth.html'
@@ -53,6 +56,39 @@ class Login(FormView):
 	def form_valid(self, form):
 		login(self.request,form.get_user())
 		return super(Login, self).form_valid(form)
+
+class config(FormView):
+	template_name = "creation.html"
+	form_class = forms.ConfigForm
+	success_url = "/list/"
+
+	def get_initial(self, **kwargs):
+		try:
+			configModel = models.Config.objects.get(id=1)
+			context = {
+				'cartaPerPage': configModel.cartaPerPage,
+			}
+		except:
+			context = {
+				'cartaPerPage': CARTACONFIG,
+			}
+		return context
+		
+
+	def form_valid(self, form):
+		form.instance.id = 1
+		form.save()
+		return super(config, self).form_valid(form)
+
+	@method_decorator(login_required)
+	def dispatch(self, request, *args, **kwargs):
+		return super(self.__class__, self).dispatch(request, *args, **kwargs)
+
+def loadConfig():
+	try:
+		return models.Config.objects.get(id=1)
+	except:
+		return { 'cartaPerPage': CARTACONFIG, }
 
 class LogOut(View):
 
@@ -669,7 +705,7 @@ class cartas(TemplateView):
 		today = datetime.date.today()
  		first = datetime.date(day=1, month=today.month, year=today.year)
  		context["lastMonth"] = first - datetime.timedelta(days=1)
- 		print context["lastMonth"]
+ 		context["cartaPerPage"] = loadConfig().cartaPerPage
 		return context
 
 	@method_decorator(login_required)

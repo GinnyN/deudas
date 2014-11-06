@@ -54,4 +54,9 @@ class AbonoForm(forms.ModelForm):
 		model = models.Ingreso
 		exclude = ["tipo","cliente"]
 
+class ConfigForm(forms.ModelForm):
+
+	class Meta:
+		model = models.Config
+
 

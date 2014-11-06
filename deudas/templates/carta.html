@@ -15,8 +15,8 @@
 		</script>
 	</head>
 	<body>
-		{% for client in clients %}
 		<div class="carta">
+		{% for client in clients %}
 			<div class="row">
 				<div class="col-md-7 center uppercase">
 					<p>John Allison Lopez<br/>
@@ -62,10 +62,15 @@
 				<p class="indent">Les saluda atentamente:</p>
 			</div>
 			<div class="row">
-				<p class="little"> {{client.0}}</p>
 				<p> Presente. - </p>
 			</div>
-		</div>
+			<div class="row">
+				<p class="little"> {{client.0}}</p>
+			</div>
+			{% if forloop.counter|divisibleby:cartaPerPage %}
+				</div>
+				<div class="carta">
+			{% endif %}
 		{% endfor %}
 	</body>
 </html>

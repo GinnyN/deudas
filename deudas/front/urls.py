@@ -25,5 +25,6 @@ urlpatterns = patterns('',
 
     url(r'^cliente/(?P<id>\d+)$',views.cliente.as_view(), name="cliente"),
     url(r'^load/log',views.loadLog.as_view(), name="load-log"),
+    url(r'^config/',views.config.as_view(), name="config"),
 )
 

@@ -46,4 +46,7 @@ class Ingreso(models.Model):
 				return self.glosa.nombre
 			except:
 				return self.cliente.nombre
-	
+
+class Config(models.Model):
+
+	cartaPerPage = models.IntegerField(verbose_name=u"Cartas por Página", blank=True, null=True)
