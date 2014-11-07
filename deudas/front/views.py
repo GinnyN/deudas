@@ -46,6 +46,9 @@ _COLUMN_WIDTH = 1344
 
 #Default Config
 CARTACONFIG = 2
+CEROSXLSBODY = False
+CEROSXLSFOOTER = True
+COBROMENSUALIDAD = True
 
 
 class Login(FormView):	
@@ -67,10 +70,16 @@ class config(FormView):
 			configModel = models.Config.objects.get(id=1)
 			context = {
 				'cartaPerPage': configModel.cartaPerPage,
+				'cerosOnXlsBody': configModel.cerosOnXlsBody,
+				'cerosOnXlsFooter': configModel.cerosOnXlsFooter,
+				'activarMensualidad': configModel.activarMensualidad, 
 			}
 		except:
 			context = {
 				'cartaPerPage': CARTACONFIG,
+				'cerosOnXlsFooter': CEROSXLSFOOTER,
+				'cerosOnXlsBody': CEROSXLSBODY,
+				'activarMensualidad': COBROMENSUALIDAD,
 			}
 		return context
 		
@@ -88,7 +97,10 @@ def loadConfig():
 	try:
 		return models.Config.objects.get(id=1)
 	except:
-		return { 'cartaPerPage': CARTACONFIG, }
+		return { 'cartaPerPage': CARTACONFIG,
+				'cerosOnXlsFooter': CEROSXLSFOOTER,
+				'cerosOnXlsBody': CEROSXLSBODY,
+				'activarMensualidad': COBROMENSUALIDAD }
 
 class LogOut(View):
 
@@ -155,11 +167,12 @@ class List(TemplateView):
 		if models.Glosa.objects.filter(nombre="Atrasado").exists() != True:
 			models.Glosa(nombre="Atrasado", detalle="Honorarios Atrasados").save()
 
-		clientes = models.Cliente.objects.filter(activo="activo")
-		for cliente in clientes:
-			if not models.Ingreso.objects.filter(cliente=cliente,glosa=mensualidad,fecha__month=datetime.date.today().month):
-				ingreso = models.Ingreso(glosa=mensualidad,tipo="deuda",fecha=datetime.date.today(),valor=cliente.mensualidad,cliente=cliente,numero=1)
-				ingreso.save()
+		if loadConfig().activarMensualidad:
+			clientes = models.Cliente.objects.filter(activo="activo")
+			for cliente in clientes:
+				if not models.Ingreso.objects.filter(cliente=cliente,glosa=mensualidad,fecha__month=datetime.date.today().month):
+					ingreso = models.Ingreso(glosa=mensualidad,tipo="deuda",fecha=datetime.date.today(),valor=cliente.mensualidad,cliente=cliente,numero=1)
+					ingreso.save()
 
 		locale.setlocale(locale.LC_TIME, 'es_ES')
 		context["formCliente"] = forms.ClienteForm()
@@ -637,6 +650,7 @@ class excel(View):
 			sheet.write(0, c, h.encode("UTF-8"), _HEADERSTYLE)
 			sheet.col(c).width = w
 
+		config = loadConfig()
 		y = 1
 		for row in qs:
 			if len(row) > 1:
@@ -646,14 +660,26 @@ class excel(View):
 					if isinstance(cell, list):
 						for insideCell in cell:
 							if isinstance(insideCell, list):
-								sheet.write(y, i, unicode(insideCell[1]).encode("UTF-8"), DEFAULTSTYLE)
+								if (config.cerosOnXlsBody == False) and (insideCell[1] == 0):
+									cont = ""
+								else:
+									cont = unicode(insideCell[1]).encode("UTF-8")
+								sheet.write(y, i, cont, DEFAULTSTYLE)
 								i+=1
 							else:
 								if isinstance(insideCell, int):
-									sheet.write(y, i, unicode(insideCell).encode("UTF-8"), DEFAULTSTYLE)
+									if (config.cerosOnXlsBody == False) and (insideCell == 0):
+										cont = ""
+									else:
+										cont = unicode(insideCell).encode("UTF-8")
+									sheet.write(y, i, cont, DEFAULTSTYLE)
 									i+=1
 					else:
-						sheet.write(y, i, unicode(cell).encode("UTF-8"), DEFAULTSTYLE)
+						if (config.cerosOnXlsBody == False) and (cell == 0):
+							cont = ""
+						else:
+							cont = unicode(cell).encode("UTF-8")
+						sheet.write(y, i, cont, DEFAULTSTYLE)
 						i+=1
 			else:
 				sheet.write(y, 0, "", _HEADERSTYLE)
@@ -667,14 +693,26 @@ class excel(View):
 			if isinstance(cell, list):
 				for insideCell in cell:
 					if isinstance(insideCell, list):
-						sheet.write(y, i, [s.encode('utf8') if type(s) is unicode else s for s in str(insideCell[1])], _HEADERSTYLE)
+						if (config.cerosOnXlsFooter == False) and (insideCell[1] == 0):
+							cont = ""
+						else:
+							cont = unicode(insideCell[1]).encode("UTF-8")
+						sheet.write(y, i, cont, _HEADERSTYLE)
 						i+=1
 					else:
 						if isinstance(insideCell, int):
-							sheet.write(y, i, [s.encode('utf8') if type(s) is unicode else s for s in str(insideCell)], _HEADERSTYLE)
+							if (config.cerosOnXlsFooter == False) and (insideCell == 0):
+								cont = ""
+							else:
+								cont = unicode(insideCell).encode("UTF-8")
+							sheet.write(y, i, cont, _HEADERSTYLE)
 							i+=1
 			else:
-				sheet.write(y, i, str(cell), _HEADERSTYLE)
+				if (config.cerosOnXlsFooter == False) and (unicode(cell) == 0): 
+					cont=""
+				else:
+					cont=unicode(cell)
+				sheet.write(y, i, cont, _HEADERSTYLE)
 				i+=1
 
 		response = HttpResponse()

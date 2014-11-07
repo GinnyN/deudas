@@ -48,5 +48,7 @@ class Ingreso(models.Model):
 				return self.cliente.nombre
 
 class Config(models.Model):
-
 	cartaPerPage = models.IntegerField(verbose_name=u"Cartas por Página", blank=True, null=True)
+	cerosOnXlsBody = models.BooleanField(verbose_name=u"Mostrar Ceros en el Detalle del archivo Excel", default=False)
+	cerosOnXlsFooter = models.BooleanField(verbose_name=u"Mostrar Ceros en el Total del archivo Excel", default=True)
+	activarMensualidad = models.BooleanField(verbose_name=u"Activar cobro Automático de Mensualidad", default=True )
