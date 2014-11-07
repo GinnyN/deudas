@@ -167,7 +167,8 @@ class List(TemplateView):
 		if models.Glosa.objects.filter(nombre="Atrasado").exists() != True:
 			models.Glosa(nombre="Atrasado", detalle="Honorarios Atrasados").save()
 
-		if loadConfig().activarMensualidad:
+		config = loadConfig()
+		if config.activarMensualidad:
 			clientes = models.Cliente.objects.filter(activo="activo")
 			for cliente in clientes:
 				if not models.Ingreso.objects.filter(cliente=cliente,glosa=mensualidad,fecha__month=datetime.date.today().month):
