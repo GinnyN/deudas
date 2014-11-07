@@ -97,10 +97,10 @@ def loadConfig():
 	try:
 		return models.Config.objects.get(id=1)
 	except:
-		return { 'cartaPerPage': CARTACONFIG,
-				'cerosOnXlsFooter': CEROSXLSFOOTER,
-				'cerosOnXlsBody': CEROSXLSBODY,
-				'activarMensualidad': COBROMENSUALIDAD }
+		return models.Config(cartaPerPage= CARTACONFIG,
+				cerosOnXlsFooter= CEROSXLSFOOTER,
+				cerosOnXlsBody= CEROSXLSBODY,
+				activarMensualidad= COBROMENSUALIDAD)
 
 class LogOut(View):
 
