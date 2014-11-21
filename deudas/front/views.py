@@ -498,11 +498,11 @@ class filter(TemplateView):
 		if(self.request.GET["filter"]=="all"):
 			context["listCliente"] = models.Cliente.objects.all().order_by("pk")
 		elif self.request.GET["filter"]=="natural":
-			context["listCliente"] = models.Cliente.objects.filter(tipo="natural").order_by("pk")
+			context["listCliente"] = models.Cliente.objects.filter(tipo="natural").order_by("nombre")
 		elif self.request.GET["filter"]=="no":
-			context["listCliente"] = models.Cliente.objects.filter(tipo="sociedad",duenio="").order_by("pk")
+			context["listCliente"] = models.Cliente.objects.filter(tipo="sociedad",duenio=None).order_by("nombre")
 		else:
-			context["listCliente"] = models.Cliente.objects.filter(tipo="sociedad",duenio=self.request.GET["filter"]).order_by("pk")
+			context["listCliente"] = models.Cliente.objects.filter(duenio=self.request.GET["filter"]).order_by("nombre")
 		if self.request.GET["activo"] == "activo":
 			context["listCliente"] = context["listCliente"].filter(activo=self.request.GET["activo"])
 		table = tabla(context["listCliente"],context["listGlosa"],datet,interval)

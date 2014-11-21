@@ -26,10 +26,9 @@
 	<select class="form-control" id="filter">
 		<option value="all">--</option>
 		<option value="natural">Persona Natural</option>
+    <option value="no">Sociedades sin Dueño Seteado</option>
 		{% for duenio in duenios %}
-			{% if forloop.first %}
-				<option value="no">Sociedades sin Dueño Seteado</option>
-			{% else %}
+			{% if duenio.0 != ""  %}
 				<option value="{{duenio.0}}">{{duenio.0|safe}}</option>
 			{% endif %}
 		{% endfor %}
