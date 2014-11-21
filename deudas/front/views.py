@@ -180,8 +180,8 @@ class List(TemplateView):
 		context["formGlosa"] = forms.GlosaForm(prefix="id")
 		context["formCobro"] = forms.CobroForm(prefix="id")
 		context["formAbono"] = forms.AbonoForm(prefix="id")	
-		context["duenios"] = models.Cliente.objects.values_list("duenio").distinct()
-		context["listCliente"] = models.Cliente.objects.all().order_by("pk")
+		context["duenios"] = models.Cliente.objects.all().order_by("duenio").values_list("duenio").distinct()
+		context["listCliente"] = models.Cliente.objects.all().order_by("nombre")
 		context["listGlosa"] = models.Glosa.objects.all().order_by("pk").exclude(nombre__in=["Mensualidad","Atrasado"])
 		table = tabla(context["listCliente"],context["listGlosa"],datetime.date.today(),"m")
 		context["clienteGlosa"] = table[1]
