@@ -10,8 +10,9 @@
 		<link rel="stylesheet" type="text/css" href={% static "css/print.css" %} />
 		<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script>
-		window.print();
+		$(window).on("load", function(){window.print()});
 		</script>
 	</head>
 	<body>

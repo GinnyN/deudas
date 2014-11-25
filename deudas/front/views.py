@@ -499,6 +499,8 @@ class filter(TemplateView):
 			context["listCliente"] = models.Cliente.objects.all().order_by("pk")
 		elif self.request.GET["filter"]=="natural":
 			context["listCliente"] = models.Cliente.objects.filter(tipo="natural").order_by("nombre")
+		elif self.request.GET["filter"]=="sociedades":
+			context["listCliente"] = models.Cliente.objects.filter(tipo="sociedad").order_by("nombre")
 		elif self.request.GET["filter"]=="no":
 			context["listCliente"] = models.Cliente.objects.filter(tipo="sociedad",duenio=None).order_by("nombre")
 		else:
@@ -620,18 +622,18 @@ class excel(View):
 		listGlosa= models.Glosa.objects.all().order_by("pk").exclude(nombre__in=["Mensualidad","Atrasado"])
 		listGlosa2 = listGlosa
 		listGlosa = []
-		listCliente = models.Cliente.objects.all()
+		listCliente = models.Cliente.objects.all().order_by("nombre")
 
 		for glosa in listGlosa2:
 			if not glosaCalc(listCliente, glosa,datet) == 0:
 				listGlosa.append(glosa)
 
-		qs = tablaCliente(listCliente.filter(tipo="natural"),listGlosa,datel,datet)
-		duenios = models.Cliente.objects.all().values_list("duenio").distinct()
+		qs = tablaCliente(listCliente.filter(duenio=None),listGlosa,datel,datet)
+		duenios = models.Cliente.objects.all().order_by("duenio").values_list("duenio").distinct()
 
 		for duenio in duenios:
 			qs.append([duenio[0]])
-			listaSociedad = tablaCliente(listCliente.filter(tipo="sociedad", duenio=duenio[0]),listGlosa,datel,datet)
+			listaSociedad = tablaCliente(listCliente.filter(duenio=duenio[0]),listGlosa,datel,datet)
 			qs = qs + listaSociedad
 
 		headers = map(lambda glosa: (glosa.nombre) ,listGlosa)
@@ -655,6 +657,7 @@ class excel(View):
 		y = 1
 		for row in qs:
 			if len(row) > 1:
+				row.pop()
 				row.pop()
 				i = 0
 				for cell in row:
@@ -728,24 +731,24 @@ class excel(View):
 		return super(self.__class__, self).dispatch(request, *args, **kwargs)
 
 
-class cartas(TemplateView):
-	template_name = "carta.html"
+class cartas(View):
 
-	def get_context_data(self, cliente, **kwargs):
-		context = super(cartas, self).get_context_data(**kwargs)
+	def post(self, request):
+		#for value in request.POST.getlist("value"]):
+		values = request.POST.getlist("value")
+		print(values)
+		#values = [map(int, x) for x in request.POST["value[]"][0]]
 		glosas = models.Glosa.objects.exclude(nombre="Mensualidad")
-		if cliente == "all":
-			listCliente = models.Cliente.objects.filter(activo="activo")
-		else:
-			listCliente = models.Cliente.objects.filter(pk=cliente)
+		listCliente = models.Cliente.objects.filter(activo="activo")#,pk__in=values)
 		datet = datetime.date.today().replace(day = calendar.monthrange(datetime.date.today().year, datetime.date.today().month)[1])
 		datel = datetime.date.today().replace(day = 1)
-		context["clients"] = tablaCliente(listCliente,glosas,datel,datet)
+		clients = tablaCliente(listCliente,glosas,datel,datet)
 		today = datetime.date.today()
  		first = datetime.date(day=1, month=today.month, year=today.year)
- 		context["lastMonth"] = first - datetime.timedelta(days=1)
- 		context["cartaPerPage"] = loadConfig().cartaPerPage
-		return context
+ 		lastMonth = first - datetime.timedelta(days=1)
+ 		cartaPerPage = loadConfig().cartaPerPage
+		return  render(request, 'carta.html', 
+			{"clients": clients, "lastMonth": lastMonth, "cartaPerPage": cartaPerPage})
 
 	@method_decorator(login_required)
 	def dispatch(self, request, *args, **kwargs):

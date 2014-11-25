@@ -1,6 +1,7 @@
 <table class="table">
 	<thead>
 		<tr>
+			<th><input type="checkbox" id="masterCheck" checked/></th>
 			<th></th>
 			<th>Nombre</th>
 			<th>Mensualidad</th>
@@ -17,6 +18,9 @@
 	<tbody>
 	{% for cliente in clienteGlosa.0 %}
 		<tr>
+			<td> 
+				<input type="checkbox" name="imprimir" value={{cliente.5}} checked>
+			</td>
 			<td>
 				{% if cliente.6 == "natural" %}
 					N
@@ -55,6 +59,7 @@
 	</tbody>
 	<tfoot>
 		<tr>
+			<td></td>
 			<td></td>
 			<td></td>
 			<td> {{ clienteGlosa.1.0.1}}</td>

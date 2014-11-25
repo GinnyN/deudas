@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block body %}
+  <form action='{%url "cartas" %}' id="exportPDF" method="GET">
+    {% csrf_token %}
+    <button  class="btn btn-danger">
+      Imprimir Cartas
+      <span class="glyphicon glyphicon-share"></span>
+    </button>
+  </form>
 <p>
 	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#agregarCliente">
 		Agregar nuevo Cliente
@@ -9,10 +16,6 @@
 	</button>
   <a href={%url "excel" "m" ahora %} class="btn btn-success" id="exportExcel">
     Exportar a Excel
-    <span class="glyphicon glyphicon-share"></span>
-  </a>
-  <a href={%url "cartas" "all" %} target="_blank" class="btn btn-danger" id="exportPDF">
-    Imprimir Cartas
     <span class="glyphicon glyphicon-share"></span>
   </a>
 </p>
@@ -26,6 +29,7 @@
 	<select class="form-control" id="filter">
 		<option value="all">--</option>
 		<option value="natural">Persona Natural</option>
+    <option value="sociedades">Sociedades</option>
     <option value="no">Sociedades sin Dueño Seteado</option>
 		{% for duenio in duenios %}
 			{% if duenio.0 != ""  %}

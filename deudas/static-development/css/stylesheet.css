@@ -9,3 +9,7 @@
 #yearContainer{
 	display: none;
 }
+
+#exportPDF{
+	float: left;
+}

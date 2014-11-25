@@ -86,6 +86,39 @@ $(document).on("ready", function(){
 			})
 		}
 	})
+
+	$("#exportPDF").on("submit", function(event){
+		event.preventDefault();
+		form = this;
+		results = [];
+		$.each($("[name=imprimir]").serializeArray(), function(){
+			results.push($(this).attr("value"));
+		})
+		data = { value: results, csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken").val() };
+		console.log(data);
+		$.ajax({
+			type: "POST",
+		  url: $(this).attr("action"),
+		  data: data,
+		  success: function(data){
+		  	generator=window.open('','name','height=400,width=500');
+		  	if (generator == undefined){
+		  		alert("Por favor Admita Pop Ups en éste dominio y después intente de nuevo");
+		  	}else{
+		  		generator.document.write(data);
+		  		generator.document.close();
+		  	}
+		  }
+		});
+		//$(this).submit();
+	})
+
+	$("#masterCheck").on("change",function(){
+		if ($(this).prop("checked"))
+			$("[name=imprimir]").prop('checked',true);
+		else
+			$("[name=imprimir]").prop('checked',false);
+	})
 });
 
 function clienteClick(){
