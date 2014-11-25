@@ -115,9 +115,9 @@ $(document).on("ready", function(){
 
 	$("#masterCheck").on("change",function(){
 		if ($(this).prop("checked"))
-			$("[name=imprimir]").prop('checked',true);
+			$("[name=imprimir]").each(function(){$(this).prop('checked',true)});
 		else
-			$("[name=imprimir]").prop('checked',false);
+			$("[name=imprimir]").each(function(){$(this).prop('checked',false)});
 	})
 });
 
