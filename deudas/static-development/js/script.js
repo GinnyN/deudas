@@ -6,7 +6,10 @@ $(document).on("ready", function(){
 	$('.table').dataTable({
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/be7019ee387/i18n/Spanish.json"
-        }
+        },
+        "aoColumnDefs": [
+          { "bSortable": false, "aTargets": [ 0 ] } 
+          ]
 	});
 	$(".edit-click").on("click", editClick);
 	$("#selectGlosa").on("change",function(){
@@ -112,6 +115,8 @@ $(document).on("ready", function(){
 		});
 		//$(this).submit();
 	})
+
+	$(".removeEventClick").unbind('click.DT');
 
 	$("#masterCheck").on("change",function(){
 		if ($(this).prop("checked"))
