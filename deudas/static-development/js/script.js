@@ -94,7 +94,8 @@ $(document).on("ready", function(){
 		event.preventDefault();
 		form = this;
 		results = [];
-		$.each($("[name=imprimir]").serializeArray(), function(){
+		console.log($("[name=imprimir]:checked"));
+		$.each($("[name=imprimir]:checked").serializeArray(), function(){
 			results.push($(this).attr("value"));
 		})
 		data = { value: results, csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken").val() };

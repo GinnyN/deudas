@@ -734,12 +734,14 @@ class excel(View):
 class cartas(View):
 
 	def post(self, request):
-		#for value in request.POST.getlist("value"]):
-		values = request.POST.getlist("value")
-		print(values)
-		#values = [map(int, x) for x in request.POST["value[]"][0]]
+		#for value in request.POST.getlist("value"):
+		print(request.POST["value[]"])
+		valuesString = request.POST.getlist('value[]')
+		print(valuesString)
+		#values = [map(int, x) for x in valuesString]
+		#print(values)
 		glosas = models.Glosa.objects.exclude(nombre="Mensualidad")
-		listCliente = models.Cliente.objects.filter(activo="activo")#,pk__in=values)
+		listCliente = models.Cliente.objects.filter(activo="activo",pk__in=valuesString)
 		datet = datetime.date.today().replace(day = calendar.monthrange(datetime.date.today().year, datetime.date.today().month)[1])
 		datel = datetime.date.today().replace(day = 1)
 		clients = tablaCliente(listCliente,glosas,datel,datet)
