@@ -12,6 +12,7 @@ $(document).on("ready", function(){
           ]
 	});
 	$(".edit-click").on("click", editClick);
+	$(".table").on("draw.dt",bindClicks)
 	$("#selectGlosa").on("change",function(){
 		$.ajax({
 			type: "GET",
@@ -56,6 +57,7 @@ $(document).on("ready", function(){
 				});
 				$(".modal-click").on("click", clienteClick);
 				$(".edit-click").on("click", editClick);
+				$(".table").on("draw.dt",bindClicks)
 			}
 		})
 	})
@@ -90,41 +92,59 @@ $(document).on("ready", function(){
 		}
 	})
 
+	$(".controller").on("change",function(){
+		if($(this).prop("checked"))
+			$("[name=imprimir]."+$(this).val()).addClass("checked");
+		else
+			$("[name=imprimir]."+$(this).val()).removeClass("checked");
+	})
+
+	$("#masterCheck").on("change",function(){
+		if($(this).prop("checked")){
+			$("[name=imprimir]").addClass("checked");
+			$(".controller").prop("checked",true);
+		}
+		else{
+			$("[name=imprimir]").removeClass("checked");
+			$(".controller").prop("checked",false);
+		}
+	});
+
 	$("#exportPDF").on("submit", function(event){
 		event.preventDefault();
 		form = this;
 		results = [];
-		console.log($("[name=imprimir]:checked"));
-		$.each($("[name=imprimir]:checked").serializeArray(), function(){
+		$.each($("[name=imprimir].checked").serializeArray(), function(){
 			results.push($(this).attr("value"));
 		})
-		data = { value: results, csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken").val() };
-		console.log(data);
-		$.ajax({
-			type: "POST",
-		  url: $(this).attr("action"),
-		  data: data,
-		  success: function(data){
-		  	generator=window.open('','name','height=400,width=500');
-		  	if (generator == undefined){
-		  		alert("Por favor Admita Pop Ups en éste dominio y después intente de nuevo");
-		  	}else{
-		  		generator.document.write(data);
-		  		generator.document.close();
-		  	}
-		  }
-		});
+		if(results.length > 0){
+			data = { value: results, csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken").val() };
+			console.log(data);
+			$.ajax({
+				type: "POST",
+			  url: $(this).attr("action"),
+			  data: data,
+			  success: function(data){
+			  	generator=window.open('','name','height=400,width=500');
+			  	if (generator == undefined){
+			  		alert("Por favor Admita Pop Ups en éste dominio y después intente de nuevo");
+			  	}else{
+			  		generator.document.write(data);
+			  		generator.document.close();
+			  	}
+			  },
+			  error: function(data){
+			  	console.log(data);
+			  }
+			});
+		}else{
+			alert("No hay Clientes seleccionados para crear una carta");
+		}
 		//$(this).submit();
 	})
 
 	$(".removeEventClick").unbind('click.DT');
 
-	$("#masterCheck").on("change",function(){
-		if ($(this).prop("checked"))
-			$("[name=imprimir]").each(function(){$(this).prop('checked',true)});
-		else
-			$("[name=imprimir]").each(function(){$(this).prop('checked',false)});
-	})
 });
 
 function clienteClick(){
@@ -139,5 +159,15 @@ function editClick(){
 	  success: function(form){
 	  	$("#editCliente .modal-body").html(form);
 	  }
+	})
+}
+
+function bindClicks(){
+	$(".controller").each(function(){
+		if ($("."+$(this).val()).hasClass("checked")){
+			$(this).prop("checked",true);
+		}else{
+			$(this).prop("checked",false);
+		}
 	})
 }

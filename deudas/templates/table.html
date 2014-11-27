@@ -19,7 +19,7 @@
 	{% for cliente in clienteGlosa.0 %}
 		<tr>
 			<td> 
-				<input type="checkbox" name="imprimir" value={{cliente.5}} checked>
+				<input type="checkbox" class="controller" value={{cliente.5}}>
 			</td>
 			<td>
 				{% if cliente.6 == "natural" %}
@@ -74,3 +74,6 @@
 		</tr>
 	</tfoot>
 </table>
+{% for cliente in clienteGlosa.0 %}
+	<input type="hidden" name="imprimir" value={{cliente.5}} class="checked {{cliente.5}}">
+{% endfor %}
