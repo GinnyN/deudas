@@ -733,6 +733,19 @@ class excel(View):
 
 class cartas(View):
 
+	def get(self, request, id):
+		glosas = models.Glosa.objects.exclude(nombre="Mensualidad")
+		listCliente = [models.Cliente.objects.get(pk=id)]
+		datet = datetime.date.today().replace(day = calendar.monthrange(datetime.date.today().year, datetime.date.today().month)[1])
+		datel = datetime.date.today().replace(day = 1)
+		clients = tablaCliente(listCliente,glosas,datel,datet)
+		today = datetime.date.today()
+ 		first = datetime.date(day=1, month=today.month, year=today.year)
+ 		lastMonth = first - datetime.timedelta(days=1)
+ 		cartaPerPage = loadConfig().cartaPerPage
+		return  render(request, 'carta.html', 
+			{"clients": clients, "lastMonth": lastMonth, "cartaPerPage": cartaPerPage})
+
 	def post(self, request):
 		#for value in request.POST.getlist("value"):
 		print(request.POST["value[]"])
@@ -743,7 +756,6 @@ class cartas(View):
 			value.append(int(v))
 		glosas = models.Glosa.objects.exclude(nombre="Mensualidad")
 		listCliente = models.Cliente.objects.filter(activo="activo",pk__in=valuesString).order_by("nombre")
-		print(listCliente)
 		datet = datetime.date.today().replace(day = calendar.monthrange(datetime.date.today().year, datetime.date.today().month)[1])
 		datel = datetime.date.today().replace(day = 1)
 		clients = tablaCliente(listCliente,glosas,datel,datet)
