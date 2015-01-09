@@ -16,6 +16,7 @@
 .carta{
 	margin: 0 5em;
 	font-family: 'Lato', sans-serif;
+	font-size: 0.7em !important;
 }
 .carta table{
 	margin: 1em 5em;
