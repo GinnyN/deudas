@@ -622,16 +622,26 @@ class excel(View):
 		listGlosa= models.Glosa.objects.all().order_by("pk").exclude(nombre__in=["Mensualidad","Atrasado"])
 		listGlosa2 = listGlosa
 		listGlosa = []
-		listCliente = models.Cliente.objects.all().order_by("nombre")
+		listCliente = models.Cliente.objects.order_by("nombre")
 
 		for glosa in listGlosa2:
 			if not glosaCalc(listCliente, glosa,datet) == 0:
 				listGlosa.append(glosa)
 
 		qs = tablaCliente(listCliente.filter(duenio=None),listGlosa,datel,datet)
-		duenios = models.Cliente.objects.all().order_by("duenio").values_list("duenio").distinct()
+		familias = models.Cliente.objects.filter(duenio__regex=u"Familia(.*)").order_by("duenio").values_list("duenio").distinct()
+		empresas = models.Cliente.objects.exclude(duenio__regex=u"Familia(.*)").exclude(duenio=u"").order_by("duenio").values_list("duenio").distinct()
 
-		for duenio in duenios:
+		qs.append([""])
+		listaSociedad = tablaCliente(listCliente.filter(duenio=""),listGlosa,datel,datet)
+		qs = qs + listaSociedad
+		
+		for duenio in familias:
+			qs.append([duenio[0]])
+			listaSociedad = tablaCliente(listCliente.filter(duenio=duenio[0]),listGlosa,datel,datet)
+			qs = qs + listaSociedad
+
+		for duenio in empresas:
 			qs.append([duenio[0]])
 			listaSociedad = tablaCliente(listCliente.filter(duenio=duenio[0]),listGlosa,datel,datet)
 			qs = qs + listaSociedad
