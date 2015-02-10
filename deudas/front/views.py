@@ -169,9 +169,10 @@ class List(TemplateView):
 
 		config = loadConfig()
 		if config.activarMensualidad:
-			clientes = models.Cliente.objects.filter(activo="activo")
+			clientes = models.Cliente.objects.filter(activo="activo").exclude(mensualidad=None)
 			for cliente in clientes:
-				if not models.Ingreso.objects.filter(cliente=cliente,glosa=mensualidad,fecha__month=datetime.date.today().month):
+				if not models.Ingreso.objects.filter(cliente=cliente,glosa=mensualidad,fecha__month=datetime.date.today().month) or models.Ingreso.objects.filter(cliente=cliente,glosa=mensualidad,fecha__month=datetime.date.today().month,valor=None):
+					models.Ingreso.objects.filter(cliente=cliente,glosa=mensualidad,fecha__month=datetime.date.today().month,valor=None).delete()
 					ingreso = models.Ingreso(glosa=mensualidad,tipo="deuda",fecha=datetime.date.today(),valor=cliente.mensualidad,cliente=cliente,numero=1)
 					ingreso.save()
 
