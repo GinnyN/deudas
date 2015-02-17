@@ -629,13 +629,20 @@ class excel(View):
 			if not glosaCalc(listCliente, glosa,datet) == 0:
 				listGlosa.append(glosa)
 
-		qs = tablaCliente(listCliente.filter(duenio=None),listGlosa,datel,datet)
+		qs = [[u"Sociedades sin Dueño"]]
+		qs = qs + tablaCliente(listCliente.filter(duenio=None, tipo=u"sociedad"),listGlosa,datel,datet)
+		listaSociedad = tablaCliente(listCliente.filter(duenio="", tipo=u"sociedad"),listGlosa,datel,datet)
+		qs = qs + listaSociedad
+
+		qn = [[u"Personas Naturales"]]
+		qn = qn + tablaCliente(listCliente.filter(duenio=None, tipo=u"natural"),listGlosa,datel,datet)
+		listaSociedad = tablaCliente(listCliente.filter(duenio="", tipo=u"natural"),listGlosa,datel,datet)
+		qn = qn + listaSociedad
+
+		qs = qn + qs
+
 		familias = models.Cliente.objects.filter(duenio__regex=u"Familia(.*)").order_by("duenio").values_list("duenio").distinct()
 		empresas = models.Cliente.objects.exclude(duenio__regex=u"Familia(.*)").exclude(duenio=u"").order_by("duenio").values_list("duenio").distinct()
-
-		qs.append([""])
-		listaSociedad = tablaCliente(listCliente.filter(duenio=""),listGlosa,datel,datet)
-		qs = qs + listaSociedad
 		
 		for duenio in familias:
 			qs.append([duenio[0]])
