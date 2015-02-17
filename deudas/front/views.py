@@ -780,12 +780,29 @@ class cartas(View):
 			value.append(int(v))
 		glosas = models.Glosa.objects.exclude(nombre="Mensualidad")
 		listCliente = models.Cliente.objects.filter(activo="activo",pk__in=valuesString).order_by("nombre")
-		datet = datetime.date.today().replace(day = calendar.monthrange(datetime.date.today().year, datetime.date.today().month)[1])
-		datel = datetime.date.today().replace(day = 1)
+
+		locale.setlocale(locale.LC_TIME, 'es_ES')
+		request.POST["date"].encode('utf8')
+		if request.POST["interval"] == "mensual":
+			date = datetime.datetime.strptime(request.POST["date"], "%B - %Y")
+		else: 
+			date = datetime.datetime.strptime(request.POST["date"], "%Y")
+		month = date.month
+		year = date.year
+
+		if request.POST["interval"] == "mensual":
+			datet = date.replace(day = calendar.monthrange(year, month)[1])
+			datel = date.replace(day = 1)
+		else:
+			datet = datetime.date(date.year,12,31)
+			datel = datetime.date(date.year,1,1)
+
+		#datet = datetime.date.today().replace(day = calendar.monthrange(datetime.date.today().year, datetime.date.today().month)[1])
+		#datel = datetime.date.today().replace(day = 1)
 		clients = tablaCliente(listCliente,glosas,datel,datet)
-		today = datetime.date.today()
- 		first = datetime.date(day=1, month=today.month, year=today.year)
- 		lastMonth = first - datetime.timedelta(days=1)
+		#today = datetime.date.today()
+ 		#first = datetime.date(day=1, month=today.month, year=today.year)
+ 		lastMonth =  date #first - datetime.timedelta(days=1)
  		cartaPerPage = loadConfig().cartaPerPage
 		return  render(request, 'carta.html', 
 			{"clients": clients, "lastMonth": lastMonth, "cartaPerPage": cartaPerPage})

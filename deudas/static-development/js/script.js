@@ -14,12 +14,14 @@ $(document).on("ready", function(){
 	$(".edit-click").on("click", editClick);
 	$(".table").on("draw.dt",bindClicks)
 	$("#selectGlosa").on("change",function(){
+		$(".loading").addClass("appear");
 		$.ajax({
 			type: "GET",
 			url: "/add/glosa/",
 			data: {selectGlosa: $("#selectGlosa").val()},
 			success: function(form){
 				$(".whereFormGoesGlosa").html(form);
+				$(".loading").removeClass("appear");
 			}
 		})
 	})
@@ -45,6 +47,7 @@ $(document).on("ready", function(){
 		}else{
 			activo = "activo"
 		}
+		$(".loading").addClass("appear");
 		$.ajax({
 			type: "GET",
 			url: "/filter/",
@@ -58,6 +61,7 @@ $(document).on("ready", function(){
 				$(".modal-click").on("click", clienteClick);
 				$(".edit-click").on("click", editClick);
 				$(".table").on("draw.dt",bindClicks)
+				$(".loading").removeClass("appear");
 			}
 		})
 	})
@@ -65,22 +69,24 @@ $(document).on("ready", function(){
 		$(".pk").val($(this).data("pk"));
 	})
 	$(".filter-date").on("click",function(){
+		$(".loading").addClass("appear");
 		$.ajax({
 			type: "GET",
 			url: "/load/log/",
 			data: {end: $("#a").val(), begin: $("#desde").val(), cliente_pk:$(".cliente_pk").val()},
 			success: function(data){
-				console.log("Hola!");
 				$("#tab-container").html(data);
 				$(".delete").on("click",function(){
 					$(".pk").val($(this).data("pk"));
 				})
+				$(".loading").appearClass("appear");
 			}
 		})
 	})
 	$("#deleteClient").on("click", function(){
 		var r = confirm("Ésta acción va a borrar todos los datos del cliente, está seguro/a que quiere hacerlo?");
 		if (r){
+			$(".loading").addClass("appear");
 			$.ajax({
 				type: "POST",
 				url: "/delete/cliente/",
@@ -118,8 +124,9 @@ $(document).on("ready", function(){
 			results.push($(this).attr("value"));
 		})
 		if(results.length > 0){
-			data = { value: results, csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken").val() };
-			console.log(data);
+			data = { value: results, csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken").val(), date: $("#date").val(), interval: $("#interval").val() };
+			$(".loading").addClass("appear");
+			console.log($("#interval").val());
 			$.ajax({
 				type: "POST",
 			  url: $(this).attr("action"),
@@ -132,9 +139,11 @@ $(document).on("ready", function(){
 			  		generator.document.write(data);
 			  		generator.document.close();
 			  	}
+			  	$(".loading").removeClass("appear");
 			  },
 			  error: function(data){
 			  	console.log(data);
+			  	$(".loading").removeClass("appear");
 			  }
 			});
 		}else{
@@ -152,12 +161,14 @@ function clienteClick(){
 }
 
 function editClick(){
+	$(".loading").addClass("appear");
 	$.ajax({
 	  type: "GET",
 	  url: "/edit/cliente/",
 	  data: { pk: $(this).data("id")},
 	  success: function(form){
 	  	$("#editCliente .modal-body").html(form);
+	  	$(".loading").removeClass("appear");
 	  }
 	})
 }
