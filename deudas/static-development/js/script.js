@@ -79,7 +79,7 @@ $(document).on("ready", function(){
 				$(".delete").on("click",function(){
 					$(".pk").val($(this).data("pk"));
 				})
-				$(".loading").appearClass("appear");
+				$(".loading").removeClass("appear");
 			}
 		})
 	})
