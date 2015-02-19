@@ -172,7 +172,8 @@ class List(TemplateView):
 		today = datetime.date.today()
 		last_month = datetime.date(day=1,month=today.month,year=today.year) - datetime.timedelta(days=1)
 
-		models.Ingreso.objects.filter(glosa=mensualidad, fecha__month=today.month).delete()
+		#models.Ingreso.objects.filter(glosa=mensualidad, fecha__month=today.month).delete()
+		models.Ingreso.objects.filter(glosa=mensualidad, fecha__month=last_month.month).delete()
 
 		if config.activarMensualidad:
 			clientes = models.Cliente.objects.filter(activo="activo").exclude(mensualidad=None)
@@ -270,26 +271,26 @@ def mensualidadCal(listCliente, atrasado, datet, datel):
 		lista = models.Ingreso.objects.filter(cliente=listCliente)
 
 	if atrasado:
-		if lista.filter(glosa=glosa,fecha__lte=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
+		if lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
 			deuda = 0
 		else:
-			deuda = int(lista.filter(glosa=glosa,fecha__lte=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"])
+			deuda = int(lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"])
 
-		if lista.filter(glosa=atrasadoGlosa, fecha__lte= datet, cliente=listCliente, tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
+		if lista.filter(glosa=atrasadoGlosa, fecha__lt= datet, cliente=listCliente, tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
 			atrasado = 0
 		else:
-			atrasado = int(lista.filter(glosa=atrasadoGlosa, fecha__lte= datet, cliente=listCliente, tipo="deuda").aggregate(Sum('valor'))["valor__sum"])
+			atrasado = int(lista.filter(glosa=atrasadoGlosa, fecha__lt= datet, cliente=listCliente, tipo="deuda").aggregate(Sum('valor'))["valor__sum"])
 		
-		if lista.filter(glosa=atrasadoGlosa, fecha__lte= datet, cliente=listCliente, tipo="boleta").aggregate(Sum('valor'))["valor__sum"] == None:
+		if lista.filter(glosa=atrasadoGlosa, fecha__lt= datet, cliente=listCliente, tipo="boleta").aggregate(Sum('valor'))["valor__sum"] == None:
 			atrasadoBoleta = 0
 		else:
 			atrasadoBoleta = int(lista.filter(glosa=atrasadoGlosa, fecha__lte= datet, cliente=listCliente, tipo="boleta").aggregate(Sum('valor'))["valor__sum"])
 		
 
-		if lista.filter(glosa=glosa,fecha__lte=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"] == None:
+		if lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"] == None:
 			boleta = 0
 		else:
-			boleta = int(lista.filter(glosa=glosa,fecha__lte=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"])
+			boleta = int(lista.filter(glosa=glosa,fecha__lt=datel, cliente=listCliente,tipo="boleta").aggregate(Sum('valor'))["valor__sum"])
 	else:
 		if lista.filter(glosa=glosa,fecha__lte=datet, fecha__gte=datel, cliente=listCliente,tipo="deuda").aggregate(Sum('valor'))["valor__sum"] == None:
 			deuda = 0
