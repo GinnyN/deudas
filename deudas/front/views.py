@@ -173,7 +173,7 @@ class List(TemplateView):
 		last_month = datetime.date(day=1,month=today.month,year=today.year) - datetime.timedelta(days=1)
 
 		#models.Ingreso.objects.filter(glosa=mensualidad, fecha__month=today.month).delete()
-		models.Ingreso.objects.filter(glosa=mensualidad, fecha__month=last_month.month).delete()
+		#models.Ingreso.objects.filter(glosa=mensualidad, fecha__month=last_month.month).delete()
 
 		if config.activarMensualidad:
 			clientes = models.Cliente.objects.filter(activo="activo").exclude(mensualidad=None)
