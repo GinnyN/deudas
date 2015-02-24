@@ -33,22 +33,33 @@
 <p class="lead col-md-6">
 	<strong>Total:</strong> <span class="label {% if balance > 0 %}label-danger{%else%}label-primary{%endif%}">$M{{balance}}</span>
 </p>
-<button class="btn btn-primary" data-toggle="modal" data-target="#agregarAbono" >
-	Agregar Abono
-	<span class="glyphicon glyphicon-minus"></span>
-</button>
-<button class="btn btn-danger" data-toggle="modal" data-target="#agregarCobro" >
-	Agregar Cobro
-	<span class="glyphicon glyphicon-plus"></span>
-</button>
-<button class="btn btn-success" data-toggle="modal" data-target="#editCliente">
-	Editar Cliente
-	<span class="glyphicon glyphicon-edit"></span>
-</button>
-<a href={%url "carta" cliente.pk %} target="_blank" class="btn btn-danger" id="exportPDF">
+<div class="row">
+  <button class="btn btn-primary" data-toggle="modal" data-target="#agregarAbono" >
+  	Agregar Abono
+  	<span class="glyphicon glyphicon-minus"></span>
+  </button>
+  <button class="btn btn-danger" data-toggle="modal" data-target="#agregarCobro" >
+  	Agregar Cobro
+  	<span class="glyphicon glyphicon-plus"></span>
+  </button>
+  <button class="btn btn-success" data-toggle="modal" data-target="#editCliente">
+  	Editar Cliente
+  	<span class="glyphicon glyphicon-edit"></span>
+  </button>
+</div>
+<div class="row">
+  <div class="col-md-2 pull-left">
+    <select class="form-control change-dates">
+      {% for date in dates %}
+        <option value="{{date}}">{{date}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <a href={%url "carta" cliente.pk %} target="_blank" class="btn btn-danger link-letter" id="exportPDF">
     Imprimir Carta
     <span class="glyphicon glyphicon-share"></span>
   </a>
+</div>
 <!-- Nav tabs -->
 <div class="row">
 <div class="col-md-5">

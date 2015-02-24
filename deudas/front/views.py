@@ -196,23 +196,23 @@ class List(TemplateView):
 		context["listGlosa"] = table[0]
 		context["ahora"] = datetime.date.today().strftime("%B - %Y")
 		dates = models.Ingreso.objects.all().order_by("-fecha").values_list("fecha").distinct()
-		locale.setlocale(locale.LC_TIME, 'es_ES')
-		datesList = map(lambda date: date[0].strftime("%B - %Y"), dates)
-		context["dates"] = []
-		for distint in datesList:
-			if distint not in context["dates"]:
-				context["dates"].append(distint) 
-		datesList = map(lambda date: date[0].strftime("%Y"), dates)
-		context["years"] = []
-		for distint in datesList:
-			if distint not in context["years"]:
-				context["years"].append(distint) 			
+		context["dates"] = monthsGenerator(dates, "%B - %Y")
+		context["years"] = monthsGenerator(dates, "%Y")	
 
 		return context
 
 	@method_decorator(login_required)
 	def dispatch(self, request, *args, **kwargs):
 		return super(self.__class__, self).dispatch(request, *args, **kwargs)
+
+def monthsGenerator(dates, format):
+	locale.setlocale(locale.LC_TIME, 'es_ES')
+	datesList = map(lambda date: date[0].strftime(format), dates)
+	listDates = []
+	for distint in datesList:
+		if distint not in listDates:
+			listDates.append(distint) 
+	return listDates
 
 def mensualidad(date):
 	if models.Ingreso.objects.filter(fecha__month=date.month,glosa__nombre="Mensualidad").count() == models.Cliente.objects.filter(activo="activo").count():
@@ -541,7 +541,9 @@ class cliente(TemplateView):
 		context["balance"] = deuda_totalCliente(context["cliente"],"deuda",dateEnd) - deuda_totalCliente(context["cliente"],"boleta",dateEnd)
 		context["formCliente"] = forms.ClienteForm(instance=context["cliente"],prefix="cliente")
 		context["formCobro"] = forms.CobroForm(prefix="id")
-		context["formAbono"] = forms.AbonoForm(prefix="id")	
+		context["formAbono"] = forms.AbonoForm(prefix="id")
+		dates = models.Ingreso.objects.all().order_by("-fecha").values_list("fecha").distinct()
+		context["dates"] = monthsGenerator(dates, "%B - %Y")
 		
 		if models.Cliente.objects.filter(tipo="natural").exists():
 			listaNatural = map(lambda cliente: cliente.pk, models.Cliente.objects.filter(tipo="natural"))
@@ -761,13 +763,18 @@ class cartas(View):
 	def get(self, request, id):
 		glosas = models.Glosa.objects.exclude(nombre="Mensualidad")
 		listCliente = [models.Cliente.objects.get(pk=id)]
-		datet = datetime.date.today().replace(day = calendar.monthrange(datetime.date.today().year, datetime.date.today().month)[1])
-		datel = datetime.date.today().replace(day = 1)
+
+		locale.setlocale(locale.LC_TIME, 'es_ES')
+		date = datetime.datetime.strptime(request.GET["dates"], "%B - %Y")
+
+		datet = date.replace(day = calendar.monthrange(date.year, date.month)[1])
+		datel = date.replace(day = 1)
 		clients = tablaCliente(listCliente,glosas,datel,datet)
-		today = datetime.date.today()
- 		first = datetime.date(day=1, month=today.month, year=today.year)
- 		lastMonth = first - datetime.timedelta(days=1)
+		#today = datetime.date.today()
+ 		#first = datetime.date(day=1, month=today.month, year=today.year)
+ 		lastMonth =  date #first - datetime.timedelta(days=1)
  		cartaPerPage = loadConfig().cartaPerPage
+
 		return  render(request, 'carta.html', 
 			{"clients": clients, "lastMonth": lastMonth, "cartaPerPage": cartaPerPage})
 

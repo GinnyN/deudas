@@ -1,4 +1,13 @@
 $(document).on("ready", function(){
+
+	letterLink = $(".link-letter").attr("href");
+
+	$(".change-dates").on("change",function(){
+		$(".link-letter").attr("href", letterLink+"?dates="+$(".change-dates").val());
+	})
+
+	$(".change-dates").change();
+
 	$(".datepicker").datepicker({
 		format: "dd/mm/yyyy"
 	});
