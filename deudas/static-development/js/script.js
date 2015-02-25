@@ -62,14 +62,17 @@ $(document).on("ready", function(){
 			url: "/filter/",
 			data: {filter: $("#filter").val(), date: date, activo: activo},
 			success: function(table){
-				$(".data-table").html(table).find(".table").dataTable({
+				tabla = $(".data-table").html(table);
+				tabla.find(".table").dataTable({
 					"language": {
 			            "url": "//cdn.datatables.net/plug-ins/be7019ee387/i18n/Spanish.json"
 			        }
 				});
 				$(".modal-click").on("click", clienteClick);
 				$(".edit-click").on("click", editClick);
-				$(".table").on("draw.dt",bindClicks)
+				$(".table").on("draw.dt",bindClicks);
+				$("#masterCheck").on("change", masterCheckFunction);
+				$(".controller").on("change", controllerChange);
 				$(".loading").removeClass("appear");
 			}
 		})
@@ -107,23 +110,9 @@ $(document).on("ready", function(){
 		}
 	})
 
-	$(".controller").on("change",function(){
-		if($(this).prop("checked"))
-			$("[name=imprimir]."+$(this).val()).addClass("checked");
-		else
-			$("[name=imprimir]."+$(this).val()).removeClass("checked");
-	})
+	$(".controller").on("change", controllerChange);
 
-	$("#masterCheck").on("change",function(){
-		if($(this).prop("checked")){
-			$("[name=imprimir]").addClass("checked");
-			$(".controller").prop("checked",true);
-		}
-		else{
-			$("[name=imprimir]").removeClass("checked");
-			$(".controller").prop("checked",false);
-		}
-	});
+	$("#masterCheck").on("change", masterCheckFunction);
 
 	$("#exportPDF").on("submit", function(event){
 		event.preventDefault();
@@ -191,3 +180,21 @@ function bindClicks(){
 		}
 	})
 }
+
+function masterCheckFunction(){
+		if($(this).prop("checked")){
+			$("[name=imprimir]").addClass("checked");
+			$(".controller").prop("checked",true);
+		}
+		else{
+			$("[name=imprimir]").removeClass("checked");
+			$(".controller").prop("checked",false);
+		}
+	}
+
+function controllerChange(){
+		if($(this).prop("checked"))
+			$("[name=imprimir]."+$(this).val()).addClass("checked");
+		else
+			$("[name=imprimir]."+$(this).val()).removeClass("checked");
+	}
