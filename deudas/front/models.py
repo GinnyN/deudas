@@ -33,9 +33,9 @@ class Ingreso(models.Model):
         ('deuda', u"Deuda"), 
         ('boleta', u"Boleta"))
 	tipo = models.CharField(max_length=20, choices=tipo_opciones, default=tipo_opciones[0][0], verbose_name=u"Tipo")
-	valor = models.IntegerField(verbose_name=u"Valor", blank=True, null=True)
+	valor = models.IntegerField(verbose_name=u"Valor")
 	numero = models.IntegerField(verbose_name=u"Numero de Boleta", blank=True)
-	glosa = models.ForeignKey(Glosa, blank=True, null=True)
+	glosa = models.ForeignKey(Glosa, default=2)
 	cliente = models.ForeignKey(Cliente)
 
 	def __unicode__(self):

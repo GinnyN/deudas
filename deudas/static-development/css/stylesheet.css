@@ -23,6 +23,7 @@
 	background: rgba(250,250,250,0.5);
 	opacity: 0;
 	transition: 0.4s opacity 0.5s right bottom;
+	z-index: 0;
 }
 
 .appear{
