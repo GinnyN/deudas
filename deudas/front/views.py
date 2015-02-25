@@ -761,7 +761,7 @@ class excel(View):
 class cartas(View):
 
 	def get(self, request, id):
-		glosas = models.Glosa.objects.exclude(nombre="Mensualidad")
+		glosas = models.Glosa.objects.exclude(nombre="Mensualidad").exclude(nombre="Atrasado")
 		listCliente = [models.Cliente.objects.get(pk=id)]
 
 		locale.setlocale(locale.LC_TIME, 'es_ES')
@@ -786,7 +786,7 @@ class cartas(View):
 		print(valuesString)
 		for v in valuesString:
 			value.append(int(v))
-		glosas = models.Glosa.objects.exclude(nombre="Mensualidad")
+		glosas = models.Glosa.objects.exclude(nombre="Mensualidad").exclude(nombre="Atrasado")
 		listCliente = models.Cliente.objects.filter(activo="activo",pk__in=valuesString).order_by("nombre")
 
 		locale.setlocale(locale.LC_TIME, 'es_ES')
