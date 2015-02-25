@@ -26,9 +26,19 @@
 	z-index: 0;
 }
 
+.loading img{
+	width: 0;
+	height: 0;
+}
+
 .appear{
 	right: 0;
 	bottom: 0;
 	opacity: 1;
 	z-index: 100000000000;
+}
+
+.loading.appear img{
+	width: auto;
+	height: auto;
 }
